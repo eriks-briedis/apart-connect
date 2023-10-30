@@ -1,0 +1,14 @@
+version: '3.4'
+
+services:
+  api:
+    image: api
+    build:
+      context: apps/api
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: development
+    ports:
+      - 5005:5005
+      - 9229:9229
+    command: ["node", "--inspect=0.0.0.0:9229", "dist/index.js"]
