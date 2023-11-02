@@ -1,15 +1,17 @@
-import cors from 'cors'
-import express from 'express'
-
+// import cors from 'cors'
+import { knexInstance } from './db/knexfile';
+import { propertiesRouter } from './routes/properties.routes';
+import { usersRouter } from './routes/users.routes';
+import express from 'express';
+import { Users } from './models';
 
 const app = express()
 const port = 5005
+app.use(express.json())
+knexInstance.migrate.latest()
 
-app.use(cors({ origin: 'http://localhost:5005' }))
+app.use('/properties', propertiesRouter)
+app.use('/users', usersRouter)
 
-app.get('/', (_, response) => {
-  console.log('Request received!!!')
-  response.json({ data: ['gloorgl'] })
-})
 
 app.listen(port, () => console.log(`Listening on http://localhost:${port}`))
