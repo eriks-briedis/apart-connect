@@ -2,10 +2,10 @@
   "ts-node": {
     "transpileOnly": true, // you can specify ts-node options here
     "compilerOptions": {
-      "module": "commonjs" // you can also override compilerOptions.  Only ts-node will use these overrides
+      "module": "NodeNext" // you can also override compilerOptions.  Only ts-node will use these overrides
     }
   },
   "compilerOptions": {
-    "moduleResolution": "NodeNext"
+    "moduleResolution": "NodeNext",
   }
 }

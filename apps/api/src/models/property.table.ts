@@ -7,6 +7,7 @@ export interface Property {
   city: string
   zip: string
   country: string
+  admin_id: string
   created_at: Date
   updated_at: Date
 }
@@ -20,3 +21,18 @@ export const createProperty = async (property: Partial<Property>) => {
     updated_at: new Date(),
   })
 }
+
+export const getUserProperties = async (userId: string) => {
+  return await Properties().where({ admin_id: userId })
+}
+
+export const propertyToJSON = (property: Property) => ({
+  id: property.id,
+  name: property.name,
+  address: property.address,
+  city: property.city,
+  zip: property.zip,
+  country: property.country,
+  updatedAt: property.updated_at,
+  createdAt: property.created_at,
+})

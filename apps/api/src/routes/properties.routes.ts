@@ -27,7 +27,7 @@ propertiesRouter.post('/', async (req, res) => {
     return
   }
 
-  await createProperty({ name, address, city, zip, country })
+  await createProperty({ name, address, city, zip, country, admin_id: req.user.id })
 
   res.json({ success: true, message: 'ok' })
 })
