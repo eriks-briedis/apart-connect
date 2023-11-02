@@ -1,7 +1,13 @@
 import { Router } from 'express';
 import { Properties } from '../models/property.table';
+import { routeGuard } from '../utils';
 
 export const propertiesRouter = Router();
+
+/**
+ * All routes in this file are protected by the routeGuard middleware
+ */
+propertiesRouter.use(routeGuard)
 
 /**
  * POST /properties

@@ -1,17 +1,19 @@
-// import cors from 'cors'
+import express from 'express';
 import { knexInstance } from './db/knexfile';
+import { authRouter } from './routes';
 import { propertiesRouter } from './routes/properties.routes';
 import { usersRouter } from './routes/users.routes';
-import express from 'express';
-import { Users } from './models';
 
 const app = express()
-const port = 5005
+const port = process.env.PORT || 5005
 app.use(express.json())
+// Run migrations on startup
 knexInstance.migrate.latest()
 
+// Routes
+app.use('/auth', authRouter)
 app.use('/properties', propertiesRouter)
 app.use('/users', usersRouter)
 
-
+// Start the server
 app.listen(port, () => console.log(`Listening on http://localhost:${port}`))
