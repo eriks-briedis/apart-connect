@@ -10,7 +10,7 @@ export async function up (knex: Knex): Promise<void> {
     table.date('date_of_birth').nullable()
     table.string('phone').nullable
     table.enum('role', ['admin', 'user']).defaultTo('user')
-    table.bigInteger('property_id').unsigned().references('id').inTable('property').onDelete('CASCADE')
+    table.integer('property_id').unsigned().references('id').inTable('property').onDelete('CASCADE')
     table.timestamp('created_at')
     table.timestamp('updated_at')
   }).then()

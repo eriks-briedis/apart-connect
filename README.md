@@ -8,12 +8,13 @@ The API is built with ExpressJS, Typescript and PostgreSQL.
 -
 
 ## TODO
-- [ ] Create a property and sets current user as admin
-- [ ] Attach user to a property
-- [ ] Detach user from a property
-- [ ] List all user's properties
-- [ ] Create a new resolution
-- [ ] Vote on a resolution
+- [x] Create a property and set current user as admin
+- [x] Attach user to a property
+- [x] Detach user from a property
+- [x] List all user's properties
+- [x] Create a new resolution
+- [x] List all resolutions for a property
+- [x] Vote on a resolution
 - [ ] ...
 
 ## Development

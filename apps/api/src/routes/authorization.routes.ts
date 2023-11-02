@@ -49,18 +49,18 @@ authRouter.post('/register', async (req, res) => {
   const {
     email,
     password,
-    first_name,
-    last_name,
+    firstName,
+    lastName,
   } = req.body
 
-  if (!email || !password || !first_name || !last_name) {
+  if (!email || !password || !firstName || !lastName) {
     res.status(400).json({ error: 'Missing required fields' })
     return
   }
 
   const passwordHash = await hash(password, saltRounds)
 
-  await createUser({ email, passwordHash, first_name, last_name })
+  await createUser({ email, passwordHash, first_name: firstName, last_name: lastName })
 
   res.json({ success: true, message: 'ok' })
 })

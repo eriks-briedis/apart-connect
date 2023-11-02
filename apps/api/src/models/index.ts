@@ -1,3 +1,5 @@
 export * from './user.table'
 export * from './property.table'
+export * from './property-user.table'
 export * from './resolution.table'
+export * from './vote.table'

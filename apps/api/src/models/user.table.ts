@@ -7,7 +7,7 @@ export enum UserRole {
 }
 
 export interface User {
-  id: string
+  id: number
   first_name: string
   last_name: string
   email: string
@@ -23,7 +23,7 @@ export interface User {
 
 export const Users = () => knexInstance<User>('user')
 
-export const getUserById = async (id: string) => {
+export const getUserById = async (id: number) => {
   return await Users().where('id', id).first()
 }
 

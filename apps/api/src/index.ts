@@ -1,6 +1,6 @@
 import express from 'express'
 import { knexInstance } from './db/knexfile'
-import { authRouter } from './routes'
+import { authRouter, votesRouter } from './routes'
 import { propertiesRouter } from './routes/properties.routes'
 import { usersRouter } from './routes/users.routes'
 
@@ -14,6 +14,7 @@ knexInstance.migrate.latest()
 app.use('/auth', authRouter)
 app.use('/properties', propertiesRouter)
 app.use('/users', usersRouter)
+app.use('/vote', votesRouter)
 
 app.get('/', (_, res) => {
   res.json({ message: 'Welcome to ApartConnect API!' })

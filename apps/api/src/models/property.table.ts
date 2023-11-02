@@ -1,13 +1,13 @@
 import { knexInstance } from '../db/knexfile'
 
 export interface Property {
-  id: string
+  id: number
   name: string
   address: string
   city: string
   zip: string
   country: string
-  admin_id: string
+  admin_id: number
   created_at: Date
   updated_at: Date
 }
@@ -22,7 +22,11 @@ export const createProperty = async (property: Partial<Property>) => {
   })
 }
 
-export const getUserProperties = async (userId: string) => {
+export const getPropertyById = async (id: number) => {
+  return await Properties().where('id', id).first()
+}
+
+export const getUserProperties = async (userId: number) => {
   return await Properties().where({ admin_id: userId })
 }
 
