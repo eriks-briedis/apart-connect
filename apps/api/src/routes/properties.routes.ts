@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { Properties } from '../models/property.table';
-import { knexInstance } from '../db/knexfile';
 
 export const propertiesRouter = Router();
 
@@ -22,7 +21,7 @@ propertiesRouter.post('/', async (req, res) => {
     return
   }
 
-  Properties().insert({
+  await Properties().insert({
     name,
     address,
     city,
@@ -30,9 +29,9 @@ propertiesRouter.post('/', async (req, res) => {
     country,
     created_at: new Date(),
     updated_at: new Date(),
-  }).then(async (r) => {
-    res.json({ success: true, message: 'ok' })
   })
+
+  res.json({ success: true, message: 'ok' })
 })
 
 propertiesRouter.get('/', async (_, res) => {
