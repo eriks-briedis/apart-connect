@@ -1,9 +1,9 @@
-import { Router } from "express";
-import { Users } from "../models";
-import { compareSync, hash } from "bcrypt";
-import { sign } from "jsonwebtoken";
+import { Router } from 'express'
+import { Users } from '../models'
+import { compareSync, hash } from 'bcrypt'
+import { sign } from 'jsonwebtoken'
 
-export const authRouter = Router();
+export const authRouter = Router()
 
 /**
  * POST /users/login
@@ -36,7 +36,7 @@ authRouter.post('/login', async (req, res) => {
 
   const token = sign({ _id: user.id, firstName: user.first_name, lastName: user.last_name }, process.env.JWT_SECRET, {
     expiresIn: '2 days',
-  });
+  })
 
   res.json({
     success: true,

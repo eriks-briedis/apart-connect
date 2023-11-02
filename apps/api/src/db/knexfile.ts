@@ -1,6 +1,7 @@
-import { Knex } from "knex";
+import { type Knex } from 'knex'
+
 require('dotenv').config()
-const knex = require('knex');
+const knex = require('knex')
 
 export const knexConfig: Knex.Config = {
   client: 'pg',
@@ -10,6 +11,6 @@ export const knexConfig: Knex.Config = {
     directory: 'src/db/migrations',
     tableName: 'migrations_history',
   },
-};
+}
 
 export const knexInstance: Knex = knex(knexConfig)

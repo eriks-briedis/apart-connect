@@ -1,4 +1,4 @@
-import { knexInstance } from "../db/knexfile"
+import { knexInstance } from '../db/knexfile'
 
 export interface Property {
   id: string

@@ -1,8 +1,8 @@
-import express from 'express';
-import { knexInstance } from './db/knexfile';
-import { authRouter } from './routes';
-import { propertiesRouter } from './routes/properties.routes';
-import { usersRouter } from './routes/users.routes';
+import express from 'express'
+import { knexInstance } from './db/knexfile'
+import { authRouter } from './routes'
+import { propertiesRouter } from './routes/properties.routes'
+import { usersRouter } from './routes/users.routes'
 
 const app = express()
 const port = process.env.PORT || 5005

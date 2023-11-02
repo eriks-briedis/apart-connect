@@ -1,8 +1,8 @@
-import { Router } from 'express';
-import { Properties } from '../models/property.table';
-import { routeGuard } from '../utils';
+import { Router } from 'express'
+import { Properties } from '../models/property.table'
+import { routeGuard } from '../utils'
 
-export const propertiesRouter = Router();
+export const propertiesRouter = Router()
 
 /**
  * All routes in this file are protected by the routeGuard middleware
@@ -44,5 +44,5 @@ propertiesRouter.get('/', async (_, res) => {
   console.log('GET /properties')
   const properties = await Properties().select()
 
-  res.json({ data: properties})
+  res.json({ data: properties })
 })
