@@ -8,4 +8,4 @@ COPY . .
 EXPOSE 5005
 RUN chown -R node /usr/src/app
 USER node
-CMD ["yarn", "run", "dev"]
+CMD ["yarn", "run", "dev:run"]

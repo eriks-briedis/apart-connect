@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { Properties } from '../models/property.table'
+import { Properties, createProperty } from '../models'
 import { routeGuard } from '../utils'
 
 export const propertiesRouter = Router()
@@ -27,15 +27,7 @@ propertiesRouter.post('/', async (req, res) => {
     return
   }
 
-  await Properties().insert({
-    name,
-    address,
-    city,
-    zip,
-    country,
-    created_at: new Date(),
-    updated_at: new Date(),
-  })
+  await createProperty({ name, address, city, zip, country })
 
   res.json({ success: true, message: 'ok' })
 })

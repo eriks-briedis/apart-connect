@@ -1,7 +1,6 @@
-import { Router } from 'express'
-import { Users } from '../models'
 import { compareSync, hash } from 'bcrypt'
-import { sign } from 'jsonwebtoken'
+import { Router } from 'express'
+import { createUser, createUserToken, getUserByEmail, userToJSON } from '../models'
 
 export const authRouter = Router()
 
@@ -20,7 +19,7 @@ authRouter.post('/login', async (req, res) => {
     return
   }
 
-  const user = await Users().where('email', email).first()
+  const user = await getUserByEmail(email)
 
   if (!user) {
     res.status(400).json({ error: 'Invalid credentials' })
@@ -34,21 +33,10 @@ authRouter.post('/login', async (req, res) => {
     return
   }
 
-  const token = sign({ _id: user.id, firstName: user.first_name, lastName: user.last_name }, process.env.JWT_SECRET, {
-    expiresIn: '2 days',
-  })
-
   res.json({
     success: true,
-    user: {
-      id: user.id,
-      firstName: user.first_name,
-      lastName: user.last_name,
-      email: user.email,
-      updatedAt: user.updated_at,
-      createdAt: user.created_at,
-    },
-    token,
+    user: userToJSON(user),
+    token: createUserToken(user),
   })
 })
 
@@ -72,14 +60,7 @@ authRouter.post('/register', async (req, res) => {
 
   const passwordHash = await hash(password, saltRounds)
 
-  await Users().insert({
-    email,
-    passwordHash,
-    first_name,
-    last_name,
-    created_at: new Date(),
-    updated_at: new Date(),
-  })
+  await createUser({ email, passwordHash, first_name, last_name })
 
   res.json({ success: true, message: 'ok' })
 })

@@ -12,3 +12,11 @@ export interface Property {
 }
 
 export const Properties = () => knexInstance<Property>('property')
+
+export const createProperty = async (property: Partial<Property>) => {
+  return await Properties().insert({
+    ...property,
+    created_at: new Date(),
+    updated_at: new Date(),
+  })
+}

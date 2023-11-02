@@ -15,5 +15,9 @@ app.use('/auth', authRouter)
 app.use('/properties', propertiesRouter)
 app.use('/users', usersRouter)
 
+app.get('/', (_, res) => {
+  res.json({ message: 'Welcome to ApartConnect API!' })
+})
+
 // Start the server
 app.listen(port, () => console.log(`Listening on http://localhost:${port}`))
