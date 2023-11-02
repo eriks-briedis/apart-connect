@@ -1,6 +1,7 @@
 import { compareSync, hash } from 'bcrypt'
 import { Router } from 'express'
 import { createUser, createUserToken, getUserByEmail, userToJSON } from '../models'
+import { getUserFromToken } from '../utils'
 
 export const authRouter = Router()
 
@@ -37,6 +38,21 @@ authRouter.post('/login', async (req, res) => {
     success: true,
     user: userToJSON(user),
     token: createUserToken(user),
+  })
+})
+
+authRouter.get('/me', async (req, res) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '')
+  const user = await getUserFromToken(token)
+
+  if (!user) {
+    res.status(401).json({ error: 'Not authorized!' })
+    return
+  }
+
+  res.json({
+    success: true,
+    user: userToJSON(user),
   })
 })
 

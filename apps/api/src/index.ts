@@ -3,10 +3,12 @@ import { knexInstance } from './db/knexfile'
 import { authRouter, votesRouter } from './routes'
 import { propertiesRouter } from './routes/properties.routes'
 import { usersRouter } from './routes/users.routes'
+import cors = require('cors')
 
 const app = express()
 const port = process.env.PORT || 5005
 app.use(express.json())
+app.use(cors())
 // Run migrations on startup
 knexInstance.migrate.latest()
 

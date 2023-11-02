@@ -17,13 +17,25 @@ export const routeGuard = async (req, res, next) => {
   }
 
   try {
+    const user = await getUserFromToken(token)
+    if (user) {
+      req.user = user
+      next()
+    }
+  } catch (e) {
+    res.status(401).json({ error: 'Not authorized!' })
+  }
+}
+
+export const getUserFromToken = async (token: string): Promise<User | null> => {
+  try {
     const data = verify(token, process.env.JWT_SECRET)
     if (data instanceof Object) {
       const user = await getUserById(data._id)
-      req.user = user
+      return user
     }
-    next()
+    return null
   } catch (e) {
-    res.status(401).json({ error: 'Not authorized!' })
+    return null
   }
 }
