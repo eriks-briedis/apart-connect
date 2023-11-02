@@ -29,8 +29,8 @@ votesRouter.post('/', async (req, res) => {
 
   const resolution = await getResolutionById(resolutionId)
   const property = await getPropertyById(resolution.property_id)
-
   const canVote = await doesUserBelongToProperty(property, req.user)
+
   if (!canVote) {
     res.status(400).json({ error: 'You cannot vote on this resolution' })
     return
