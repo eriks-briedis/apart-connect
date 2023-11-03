@@ -1,7 +1,9 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { FormEvent, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
+import { useRegister } from './hooks'
+import { Input, SubmitButton } from 'ui'
 
 export default function Register() {
   const router = useRouter()
@@ -9,53 +11,54 @@ export default function Register() {
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [registerResponse, register] = useRegister()
+
+  useEffect(() => {
+    if (!registerResponse) {
+      return
+    }
+
+    // @TODO: Add proper error handling
+    if (!registerResponse.success) {
+      alert('Invalid registration credentials')
+      return
+    }
+
+    // @TODO: Show success message
+    router.push('/auth/login')
+  }, [registerResponse, router])
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-
-    const response = await fetch('http://localhost:5005/auth/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        firstName,
-        lastName,
-        email,
-        password,
-      }),
-    })
-
-    const data = await response.json()
-
-    if (data) {
-      router.push('/auth/login')
-    }
+    register({ firstName, lastName, email, password })
   }
 
   return (
     <>
-      <h2>Login</h2>
+      <h5 className="text-center mb-4">Izveidot jaunu kontu</h5>
       <form onSubmit={onSubmit}>
-        <div>
-          <label htmlFor="firstName">Vārds</label>
-          <input type="text" placeholder="Vārds" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+        <Input type="text" name="firstName" placeholder="Vārds" required value={firstName} onChange={setFirstName}>
+          Vārds
+        </Input>
+
+        <Input type="text" name="lastName" placeholder="Uzvārds" required value={lastName} onChange={setLastName}>
+          Uzvārds
+        </Input>
+
+        <Input type="email" name="email" placeholder="Epasts" required value={email} onChange={setEmail}>
+          Epasts
+        </Input>
+
+        <Input type="password" name="password" placeholder="Parole" required value={password} onChange={setPassword}>
+          Parole
+        </Input>
+
+        <div className="mb-4 text-center">
+          <SubmitButton>Reģistrēties</SubmitButton>
         </div>
-        <div>
-          <label htmlFor="lastName">Uzvārds</label>
-          <input type="text" placeholder="Uzvārds" value={lastName} onChange={(e) => setLastName(e.target.value)} />
-        </div>
-        <div>
-          <label htmlFor="email">Epasts</label>
-          <input type="email" placeholder="Epasts" value={email} onChange={(e) => setEmail(e.target.value)} />
-        </div>
-        <div>
-          <label htmlFor="password">Parole</label>
-          <input type="password" placeholder="Parole" value={password} onChange={(e) => setPassword(e.target.value)} />
-        </div>
-        <button type="submit">Reģistrēties</button>
-        <p>
-          Jau ir konts? <a href="/auth/login">Ienākt</a>
+
+        <p className="text-right">
+          Jau ir konts? <a className="font-medium text-blue-600 dark:text-blue-500 hover:underline" href="/auth/login">Ienākt</a>
         </p>
       </form>
     </>

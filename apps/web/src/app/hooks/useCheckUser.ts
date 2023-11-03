@@ -1,25 +1,22 @@
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { GET, getAuthToken } from "../utils";
 
 export function useCheckUser() {
   const router = useRouter()
   const [user, setUser] = useState(null)
 
-  async function getUser() {
-    const token = localStorage.getItem('apart-connect-token')
+  const getUser = useCallback(async () => {
+    const token = getAuthToken()
     if (!token) {
-      window.location.href = '/auth/login'
+      router.push('/auth/login')
+      return
     }
 
-    const response = await fetch('http://localhost:5005/auth/me', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    const { user } = await response.json()
+    const { user } = await GET('/auth/me')
 
     return user
-  }
+  }, [router])
 
   useEffect(() => {
     getUser().then((user) => {
@@ -30,7 +27,7 @@ export function useCheckUser() {
       }
       setUser(user)
     })
-  }, [router])
+  }, [router, getUser])
 
   return user
 }
