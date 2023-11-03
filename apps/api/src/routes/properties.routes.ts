@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { ResolutionStatus, ResolutionType, attachUserToProperty, createProperty, createResolution, detachUserFromProperty, getPropertyById, getResolutionsByPropertyId, getUserProperties, isUserAttachedToProperty, resolutionToJSON } from '../models'
+import { ResolutionStatus, ResolutionType, attachUserToProperty, createProperty, createResolution, detachUserFromProperty, getPropertyById, getResolutionsByPropertyId, getUserProperties, isUserAttachedToProperty, propertyToJSON, resolutionToJSON } from '../models'
 import { routeGuard } from '../utils'
 
 export const propertiesRouter = Router()
@@ -39,7 +39,7 @@ propertiesRouter.post('/', async (req, res) => {
 propertiesRouter.get('/', async (req, res) => {
   const properties = await getUserProperties(req.user.id)
 
-  res.json({ data: properties })
+  res.json({ data: { properties: properties.map(propertyToJSON) } })
 })
 
 /**

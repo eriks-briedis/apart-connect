@@ -1,7 +1,7 @@
 import * as React from "react";
 
 export interface InputProps {
-  type: string
+  type?: string
   children?: React.ReactNode
   name: string
   value: string
@@ -10,7 +10,15 @@ export interface InputProps {
   onChange: (value: string) => void
 }
 
-export function Input({ type, children, name, placeholder, required, value, onChange }: InputProps): JSX.Element {
+export function Input({
+  type = 'text',
+  children,
+  name,
+  placeholder,
+  required,
+  value,
+  onChange,
+}: InputProps): JSX.Element {
   return (
     <div className="mb-4">
       <label
