@@ -7,6 +7,7 @@ export async function up(knex: Knex): Promise<void> {
     table.foreign('user_id').references('id').inTable('user').onDelete('CASCADE')
     table.string('title').notNullable()
     table.string('message').notNullable()
+    table.string('url')
     table.enum('type', ['invitation', 'resolution']).notNullable()
     table.boolean('read').defaultTo(false)
     table.timestamp('created_at')

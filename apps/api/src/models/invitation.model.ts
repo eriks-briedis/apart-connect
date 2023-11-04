@@ -1,14 +1,9 @@
 import moment from 'moment'
 import { knexInstance } from '../db/knexfile'
 import { randomBytes } from 'crypto'
-import { NotificationType, createNotification } from './notification.model'
+import { createNotification } from './notification.model'
 import { getPropertyById } from './property.table'
-
-export enum InvitationStatus {
-  PENDING = 'pending',
-  ACCEPTED = 'accepted',
-  REJECTED = 'rejected',
-}
+import { InvitationModel, InvitationStatus } from 'shared'
 
 export interface Invitation {
   id: number
@@ -53,15 +48,16 @@ export const createInvitation = async (input: Partial<Invitation>) => {
 
   await createNotification({
     user_id: invitation.user_id,
-    title: 'You have a new invitation',
-    message: `You have been invited to join ${property.name}. Click <a href="${notificationUrl}">here</a> to accept the invitation.`,
-    type: NotificationType.INVITATION,
+    title: 'Jūs esat saņēmis jaunu ielūgumu!',
+    message: `Jūs esat saņēmis uzaicinājumu pievienoties ${property.name}. Lūdzu, apskatiet un pieņemiet vai norietu uzaicinājumu`,
+    url: notificationUrl,
+    type: 'invitation',
   })
 
   return invitation
 }
 
-export const invitationToJSON = (invitation: Invitation) => ({
+export const invitationToJSON = (invitation: Invitation): InvitationModel => ({
   id: invitation.id,
   email: invitation.email,
   userId: invitation.user_id,

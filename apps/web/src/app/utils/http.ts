@@ -12,6 +12,7 @@ async function makeRequest(
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   }
+
   if (authToken) {
     headers['Authorization'] = `Bearer ${authToken}`
   }

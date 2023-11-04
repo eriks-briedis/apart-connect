@@ -1,22 +1,16 @@
 import { sign } from 'jsonwebtoken'
 import { knexInstance } from '../db/knexfile'
-
-export enum UserRole {
-  USER = 'user',
-  ADMIN = 'admin',
-}
+import { UserModel, UserRole } from 'shared'
 
 export interface User {
   id: number
   first_name: string
   last_name: string
   email: string
-  // @TODO: rename to password_hash
   passwordHash: string
   date_of_birth: string
   phone: string
   role: UserRole
-  property_id: string
   created_at: Date
   updated_at: Date
 }
@@ -45,11 +39,13 @@ export const createUserToken = (user: Partial<User>) => {
   })
 }
 
-export const userToJSON = (user: User) => ({
+export const userToJSON = (user: User): UserModel => ({
   id: user.id,
   firstName: user.first_name,
   lastName: user.last_name,
   email: user.email,
+  phone: user.phone,
+  dateOfBirth: user.date_of_birth,
   updatedAt: user.updated_at,
   createdAt: user.created_at,
 })

@@ -1,10 +1,11 @@
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
-import { GET, getAuthToken } from "../utils";
+import { useRouter } from 'next/navigation';
+import { useCallback, useState } from 'react';
+import { GET, getAuthToken, removeAuthToken } from '../utils';
+import { HTTPResponse, UserLoginModel } from 'shared';
 
-export function useCheckUser() {
+export function useCheckUser(): [HTTPResponse<UserLoginModel> | null, () => Promise<void>] {
   const router = useRouter()
-  const [user, setUser] = useState(null)
+  const [response, setResponse] = useState(null)
 
   const getUser = useCallback(async () => {
     const token = getAuthToken()
@@ -13,21 +14,16 @@ export function useCheckUser() {
       return
     }
 
-    const { user } = await GET('/auth/me')
+    const response = await GET('/auth/me')
 
-    return user
+    if (!response.data) {
+      removeAuthToken()
+      router.push('/auth/login')
+      return
+    }
+
+    setResponse(response)
   }, [router])
 
-  useEffect(() => {
-    getUser().then((user) => {
-      if (!user) {
-        localStorage.removeItem('apart-connect-token')
-        router.push('/auth/login')
-        return
-      }
-      setUser(user)
-    })
-  }, [router, getUser])
-
-  return user
+  return [response, getUser]
 }

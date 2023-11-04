@@ -20,7 +20,7 @@ export default function PropertyPage({ params }: any) {
         alert('Neizdevās ielādēt māju')
         return
       }
-      setProperty(response.property)
+      setProperty(response.data)
     }
 
     getProperty()

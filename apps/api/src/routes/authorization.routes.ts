@@ -37,8 +37,8 @@ authRouter.post('/login', async (req, res) => {
 
   res.json({
     success: true,
-    user: userToJSON(user),
     token: createUserToken(user),
+    data: userToJSON(user),
   })
 })
 
@@ -55,7 +55,7 @@ authRouter.get('/me', async (req, res) => {
 
   res.json({
     success: true,
-    user: {
+    data: {
       ...userToJSON(user),
       notifications: notifications.map(notificationToJSON),
     },

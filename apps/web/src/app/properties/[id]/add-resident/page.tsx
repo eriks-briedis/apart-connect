@@ -27,7 +27,7 @@ export default function AddResidentPage({ params }: any) {
       return
     }
 
-    setProperty(propertyResponse.property)
+    setProperty(propertyResponse.data)
   }, [propertyResponse])
 
   const onFormSubmit = async (e: any) => {

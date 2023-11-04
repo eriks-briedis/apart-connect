@@ -1,5 +1,6 @@
 import { POST } from '@/app/utils'
 import { useState } from 'react'
+import { HTTPAcceptResponse, HTTPResponse } from 'shared'
 
 export interface RegisterInput {
   email: string
@@ -8,8 +9,7 @@ export interface RegisterInput {
   lastName: string
 }
 
-// @TODO: fix types
-export function useRegister(): [any, (input: RegisterInput) => Promise<any>] {
+export function useRegister(): [HTTPAcceptResponse | null, (input: RegisterInput) => Promise<any>] {
   const [response, setResponse] = useState(null)
 
   const register = async (input: RegisterInput) => {

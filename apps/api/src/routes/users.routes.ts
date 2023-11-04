@@ -15,5 +15,5 @@ usersRouter.use(routeGuard)
 usersRouter.get('/', async (_, res) => {
   const users = await Users().select()
 
-  res.json({ success: true, users: users.map(userToJSON) })
+  res.json({ success: true, data: users.map(userToJSON) })
 })

@@ -1,9 +1,9 @@
 'use client'
 
-import { useContext, useEffect, useState } from 'react';
-import { PageHeader, UserContext } from '../../components';
 import { POST } from '@/app/utils';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { PageHeader } from '../../components';
 
 export default function NotificationsPage({ params }: any) {
   const token = params.token
@@ -20,6 +20,7 @@ export default function NotificationsPage({ params }: any) {
       if (!response.success) {
         // @TODO: show error message
         alert('Neizdevās apstrādāt ielūgumu')
+        router.push('/notifications')
         return
       }
 

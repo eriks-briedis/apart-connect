@@ -1,15 +1,12 @@
+import { NotificationModel, NotificationType } from 'shared'
 import { knexInstance } from '../db/knexfile'
-
-export enum NotificationType {
-  INVITATION = 'invitation',
-  RESOLUTION = 'resolution',
-}
 
 export interface Notification {
   id: number
   user_id: number
   title: string
   message: string
+  url: string
   type: NotificationType
   read: boolean
   created_at: Date
@@ -19,7 +16,7 @@ export interface Notification {
 export const Notifications = () => knexInstance<Notification>('notification')
 
 export const getNotificationsByUserId = async (userId: number) => {
-  return await Notifications().where({ user_id: userId })
+  return await Notifications().where({ user_id: userId }).orderBy('created_at', 'desc')
 }
 
 export const createNotification = async (input: Partial<Notification>) => {
@@ -34,12 +31,21 @@ export const createNotification = async (input: Partial<Notification>) => {
   return notification
 }
 
-export const notificationToJSON = (notification: Notification) => ({
+export const getNotificationById = async (id: number) => {
+  return await Notifications().where({ id }).first()
+}
+
+export const markNotificationAsRead = async (id: number) => {
+  return await Notifications().where({ id }).update({ read: true })
+}
+
+export const notificationToJSON = (notification: Notification): NotificationModel => ({
   id: notification.id,
   title: notification.title,
   message: notification.message,
+  url: notification.url,
   type: notification.type,
   read: notification.read,
-  created_at: notification.created_at,
-  updated_at: notification.updated_at,
+  createdAt: notification.created_at,
+  updatedAt: notification.updated_at,
 })

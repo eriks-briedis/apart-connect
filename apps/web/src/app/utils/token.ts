@@ -11,3 +11,11 @@ export function setAuthToken(token: string) {
     console.error(e)
   }
 }
+
+export function removeAuthToken() {
+  try {
+    localStorage.removeItem(AUTH_TOKEN_NAME)
+  } catch (e) {
+    console.error(e)
+  }
+}

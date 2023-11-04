@@ -1,9 +1,9 @@
 import { GET } from '@/app/utils'
 import { useState } from 'react'
+import { HTTPResponse, PropertyModel } from 'shared'
 
-export function useGetProperty(): [any, (propertyId: number) => Promise<void>] {
-  //@TODO: add types
-  const [property, setProperty] = useState<any>(null)
+export function useGetProperty(): [HTTPResponse<PropertyModel> | null, (propertyId: number) => Promise<void>] {
+  const [property, setProperty] = useState<HTTPResponse<PropertyModel> | null>(null)
 
   const getProperties = async (propertyId: number) => {
     const response = await GET(`/properties/${propertyId}`)

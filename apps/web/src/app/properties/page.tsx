@@ -1,16 +1,32 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useProperties } from './hooks'
 import { PageHeader } from '../components'
+import { PropertyModel } from 'shared'
 
 export default function Properties() {
-  const [properties, getProperties] = useProperties()
+  const [response, getPropertiesResponse] = useProperties()
+  const [properties, setProperties] = useState<PropertyModel[] | undefined>([])
 
   useEffect(() => {
-    getProperties()
+    getPropertiesResponse()
   }, [])
+
+  useEffect(() => {
+    if (!response) {
+      return
+    }
+
+    if (!response.success) {
+      // @TODO: handle error
+      alert('Neizdevās ielādēt mājas')
+      return
+    }
+
+    setProperties(response.data)
+  }, [response])
 
   return (
     <div>
@@ -18,7 +34,7 @@ export default function Properties() {
 
       <div className="py-2 px-4">
         <div className="grid grid-cols-4 gap-4">
-          {properties.map((property) => (
+          {!!properties && properties.map((property) => (
             <div key={property.id} className="shadow rounded-md hover:bg-gray-100">
               <Link href={`/properties/${property.id}`}>
                 <div className="w-100 h-40 bg-gray-300 rounded-t-md flex justify-center items-center">

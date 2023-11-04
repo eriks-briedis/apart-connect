@@ -1,7 +1,8 @@
 import { Router } from 'express'
 import { routeGuard } from '../utils'
 import { attachUserToProperty, doesUserBelongToProperty, getPropertyById, getUserByEmail, isUserAttachedToProperty } from '../models'
-import { InvitationStatus, createInvitation, getInvitationByToken, invitationToJSON } from '../models/invitation.model'
+import { createInvitation, getInvitationByToken, invitationToJSON } from '../models/invitation.model'
+import { markNotificationAsRead } from '../models/notification.model'
 
 export const invitationsRoute = Router()
 
@@ -41,7 +42,7 @@ invitationsRoute.post('/', async (req, res) => {
     invited_by: req.user.id,
   })
 
-  res.json({ success: true, invitation: invitationToJSON(invitation) })
+  res.json({ success: true, data: invitationToJSON(invitation) })
 })
 
 invitationsRoute.post('/accept', async (req, res) => {
@@ -53,7 +54,7 @@ invitationsRoute.post('/accept', async (req, res) => {
   }
 
   const invitation = await getInvitationByToken(token)
-  if (!invitation || invitation.user_id !== req.user.id || invitation.status !== InvitationStatus.PENDING) {
+  if (!invitation || invitation.user_id !== req.user.id || invitation.status !== 'pending') {
     res.status(400).json({ error: 'Invalid invitation' })
     return
   }
@@ -65,11 +66,13 @@ invitationsRoute.post('/accept', async (req, res) => {
   }
 
   if (await isUserAttachedToProperty(property.id, req.user.id)) {
+    await markNotificationAsRead(invitation.id)
     res.status(400).json({ error: 'User is already attached to this property' })
     return
   }
 
   await attachUserToProperty(property.id, req.user.id)
+  await markNotificationAsRead(invitation.id)
 
   res.json({ success: true, message: 'ok' })
 })

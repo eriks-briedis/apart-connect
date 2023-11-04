@@ -1,5 +1,6 @@
 import { knexInstance } from '../db/knexfile'
 import { getUserProperties } from './property-user.table'
+import { PropertyModel } from 'shared'
 export interface Property {
   id: number
   name: string
@@ -39,7 +40,7 @@ export const getAllUserProperties = async (userId: number) => {
     .filter((property, index, self) => self.findIndex((p) => p.id === property.id) === index)
 }
 
-export const propertyToJSON = (property: Property) => ({
+export const propertyToJSON = (property: Property): PropertyModel => ({
   id: property.id,
   name: property.name,
   address: property.address,

@@ -5,13 +5,37 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createContext, useEffect, useState } from 'react'
 import { useCheckUser } from '../hooks/useCheckUser'
+import { UserLoginModel } from 'shared'
 
-export const UserContext = createContext(null)
+export interface UserContextProps {
+  user: UserLoginModel
+  refreshUser: () => void
+}
+
+export const UserContext = createContext<UserContextProps | null>(null)
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
-  const user: any = useCheckUser()
+  const [userResponse, setUserResponse] = useCheckUser()
   const [unreadNotifications, setUnreadNotifications] = useState<number>(0)
+  const [user, setUser] = useState<UserLoginModel | null>(null)
+
+  useEffect(() => {
+    setUserResponse()
+  }, [])
+
+  useEffect(() => {
+    if (!userResponse) {
+      return
+    }
+
+    if (!userResponse.success) {
+      router.push('/auth/login')
+      return
+    }
+
+    setUser(userResponse.data ?? null)
+  }, [userResponse, router])
 
   useEffect(() => {
     if (!user) {
@@ -21,6 +45,10 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
     const unreadNotifications = user.notifications.filter((notification: any) => !notification.read).length
     setUnreadNotifications(unreadNotifications)
   }, [user])
+
+  const onRefreshUser = () => {
+    setUserResponse()
+  }
 
   const onLogout = () => {
     localStorage.removeItem('apart-connect-token')
@@ -59,7 +87,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
         <div className="w-full max-w-screen-xl bg-white shadow-lg rounded-md mb-4 drop-shadow-md">
-          <UserContext.Provider value={user}>
+          <UserContext.Provider value={{ user: user, refreshUser: () => onRefreshUser() }}>
             {children}
           </UserContext.Provider>
         </div>
