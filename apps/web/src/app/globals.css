@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @layer base{
+  * {
+    color: #333;
+  }
+
   h1{
     font-size: 64px;
     font-weight:700;

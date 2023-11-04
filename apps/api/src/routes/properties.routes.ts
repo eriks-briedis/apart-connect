@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { ResolutionStatus, ResolutionType, attachUserToProperty, createProperty, createResolution, detachUserFromProperty, getPropertyById, getResolutionsByPropertyId, getUserProperties, isUserAttachedToProperty, propertyToJSON, resolutionToJSON } from '../models'
+import { ResolutionStatus, ResolutionType, attachUserToProperty, createProperty, createResolution, detachUserFromProperty, doesUserBelongToProperty, getPropertyById, getResolutionsByPropertyId, getUserProperties, isUserAttachedToProperty, propertyToJSON, resolutionToJSON } from '../models'
 import { routeGuard } from '../utils'
 
 export const propertiesRouter = Router()
@@ -39,7 +39,35 @@ propertiesRouter.post('/', async (req, res) => {
 propertiesRouter.get('/', async (req, res) => {
   const properties = await getUserProperties(req.user.id)
 
-  res.json({ data: { properties: properties.map(propertyToJSON) } })
+  res.json({ success: true, properties: properties.map(propertyToJSON) })
+})
+
+/**
+ * GET /properties/:propertyId
+ * Gets a property by id
+ * Only the property admin or users attached to the property can view it
+ */
+propertiesRouter.get('/:propertyId', async (req, res) => {
+  const propertyId = parseInt(req.params.propertyId, 10)
+
+  if (!propertyId) {
+    res.status(400).json({ error: 'Missing required fields' })
+    return
+  }
+
+  const property = await getPropertyById(propertyId)
+  if (!property) {
+    res.status(400).json({ error: 'Invalid property' })
+    return
+  }
+
+  const canView = await doesUserBelongToProperty(property, req.user)
+  if (!canView) {
+    res.status(400).json({ error: 'Invalid property' })
+    return
+  }
+
+  res.json({ success: true, property: propertyToJSON(property) })
 })
 
 /**

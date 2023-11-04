@@ -7,7 +7,7 @@ export function useProperties(): [any[], () => Promise<void>] {
 
   const getProperties = async () => {
     const response = await GET('/properties')
-    setProperties(response.data.properties)
+    setProperties(response.properties)
   }
 
   return [properties, getProperties]

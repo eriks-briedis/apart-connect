@@ -1,4 +1,6 @@
 import { knexInstance } from '../db/knexfile'
+import { Property } from './property.table'
+import { User } from './user.table'
 
 export interface PropertyUser {
   id: number
@@ -20,9 +22,9 @@ export const isUserAttachedToProperty = async (propertyId: number, userId: numbe
   return !!propertyUser
 }
 
-export const doesUserBelongToProperty = async (p, u) => {
-  const isUserAttached = await isUserAttachedToProperty(u.id, p.id)
-  const isUserAdmin = u.id === p.admin_id
+export const doesUserBelongToProperty = async (property: Property, user: User) => {
+  const isUserAttached = await isUserAttachedToProperty(user.id, property.id)
+  const isUserAdmin = user.id == property.admin_id
 
   return isUserAttached || isUserAdmin
 }
