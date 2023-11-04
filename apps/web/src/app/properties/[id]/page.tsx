@@ -1,9 +1,9 @@
 'use client'
 
+import { PageHeader } from '@/app/components'
 import { GET } from '@/app/utils'
 import Link from 'next/link'
 import { Suspense, useEffect, useState } from 'react'
-import PropertyHeader from '../components/propertyHeader'
 
 export default function PropertyPage({ params }: any) {
   const [property, setProperty] = useState<any>(null)
@@ -31,14 +31,14 @@ export default function PropertyPage({ params }: any) {
       <Suspense fallback={<div>Loading...</div>}>
         {property && (
           <div>
-            <PropertyHeader header={property.name} backLink={`/properties`}>
+            <PageHeader header={property.name} backLink={`/properties`}>
               <Link
                 className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                 href={`/properties/${property.id}/add-resident`}
               >
                 Pievienot iedzīvotāju
               </Link>
-            </PropertyHeader>
+            </PageHeader>
             <p>{property?.address} {property?.city} {property?.zip}</p>
           </div>
         )}

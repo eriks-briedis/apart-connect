@@ -2,6 +2,7 @@ import { compareSync, hash } from 'bcrypt'
 import { Router } from 'express'
 import { createUser, createUserToken, getUserByEmail, userToJSON } from '../models'
 import { getUserFromToken } from '../utils'
+import { getNotificationsByUserId, notificationToJSON } from '../models/notification.model'
 
 export const authRouter = Router()
 
@@ -50,9 +51,14 @@ authRouter.get('/me', async (req, res) => {
     return
   }
 
+  const notifications = await getNotificationsByUserId(user.id)
+
   res.json({
     success: true,
-    user: userToJSON(user),
+    user: {
+      ...userToJSON(user),
+      notifications: notifications.map(notificationToJSON),
+    },
   })
 })
 

@@ -23,7 +23,8 @@ export const isUserAttachedToProperty = async (propertyId: number, userId: numbe
 }
 
 export const doesUserBelongToProperty = async (property: Property, user: User) => {
-  const isUserAttached = await isUserAttachedToProperty(user.id, property.id)
+  const isUserAttached = await isUserAttachedToProperty(property.id, user.id)
+  console.log(`Is user attached: ${isUserAttached}`)
   const isUserAdmin = user.id == property.admin_id
 
   return isUserAttached || isUserAdmin
@@ -40,4 +41,8 @@ export const attachUserToProperty = async (propertyId: number, userId: number) =
 
 export const detachUserFromProperty = async (propertyId: number, userId: number) => {
   return await PropertyUsers().where({ property_id: propertyId, user_id: userId }).del()
+}
+
+export const getUserProperties = async (userId: number) => {
+  return await PropertyUsers().where({ user_id: userId })
 }

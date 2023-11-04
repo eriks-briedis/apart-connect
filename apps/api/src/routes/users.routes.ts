@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { Users } from '../models'
+import { Users, userToJSON } from '../models'
 import { routeGuard } from '../utils'
 export const usersRouter = Router()
 
@@ -15,5 +15,5 @@ usersRouter.use(routeGuard)
 usersRouter.get('/', async (_, res) => {
   const users = await Users().select()
 
-  res.json({ data: users })
+  res.json({ success: true, users: users.map(userToJSON) })
 })

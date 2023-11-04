@@ -1,6 +1,6 @@
 import express from 'express'
 import { knexInstance } from './db/knexfile'
-import { authRouter, votesRouter } from './routes'
+import { authRouter, invitationsRoute, votesRouter } from './routes'
 import { propertiesRouter } from './routes/properties.routes'
 import { usersRouter } from './routes/users.routes'
 import cors = require('cors')
@@ -17,6 +17,7 @@ app.use('/auth', authRouter)
 app.use('/properties', propertiesRouter)
 app.use('/users', usersRouter)
 app.use('/vote', votesRouter)
+app.use('/invitations', invitationsRoute)
 
 app.get('/', (_, res) => {
   res.json({ message: 'Welcome to ApartConnect API!' })

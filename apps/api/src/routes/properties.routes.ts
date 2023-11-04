@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { ResolutionStatus, ResolutionType, attachUserToProperty, createProperty, createResolution, detachUserFromProperty, doesUserBelongToProperty, getPropertyById, getResolutionsByPropertyId, getUserProperties, isUserAttachedToProperty, propertyToJSON, resolutionToJSON } from '../models'
+import { ResolutionStatus, ResolutionType, attachUserToProperty, createProperty, createResolution, detachUserFromProperty, doesUserBelongToProperty, getAllUserProperties, getPropertyById, getResolutionsByPropertyId, getUserProperties, isUserAttachedToProperty, propertyToJSON, resolutionToJSON } from '../models'
 import { routeGuard } from '../utils'
 
 export const propertiesRouter = Router()
@@ -37,7 +37,7 @@ propertiesRouter.post('/', async (req, res) => {
  * Lists all properties for the logged in user
  */
 propertiesRouter.get('/', async (req, res) => {
-  const properties = await getUserProperties(req.user.id)
+  const properties = await getAllUserProperties(req.user.id)
 
   res.json({ success: true, properties: properties.map(propertyToJSON) })
 })
@@ -179,5 +179,30 @@ propertiesRouter.get('/:propertyId/resolutions', async (req, res) => {
 
   const resolutions = await getResolutionsByPropertyId(propertyId)
 
-  res.json({ data: { resolutions: resolutions.map(resolutionToJSON) } })
+  res.json({ successs: true, resolutions: resolutions.map(resolutionToJSON) })
+})
+
+propertiesRouter.get('/:propertyId/users', async (req, res) => {
+  const propertyId = parseInt(req.params.propertyId, 10)
+
+  if (!propertyId) {
+    res.status(400).json({ error: 'Missing required fields' })
+    return
+  }
+
+  const property = await getPropertyById(propertyId)
+  if (!property) {
+    res.status(400).json({ error: 'Invalid property' })
+    return
+  }
+
+  const canView = await isUserAttachedToProperty(req.user.id, propertyId)
+  if (!canView && property.admin_id !== req.user.id) {
+    res.status(400).json({ error: 'Invalid property' })
+    return
+  }
+
+  const users = await getUserProperties(propertyId)
+
+  res.json({ success: true, users: users.map(propertyToJSON) })
 })

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useEffect } from 'react'
 import { useProperties } from './hooks'
-import PropertyHeader from './components/propertyHeader'
+import { PageHeader } from '../components'
 
 export default function Properties() {
   const [properties, getProperties] = useProperties()
@@ -14,7 +14,7 @@ export default function Properties() {
 
   return (
     <div>
-      <PropertyHeader header="Manas mājas"></PropertyHeader>
+      <PageHeader header="Manas mājas"></PageHeader>
 
       <div className="py-2 px-4">
         <div className="grid grid-cols-4 gap-4">

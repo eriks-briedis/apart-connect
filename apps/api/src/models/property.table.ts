@@ -1,5 +1,5 @@
 import { knexInstance } from '../db/knexfile'
-
+import { getUserProperties } from './property-user.table'
 export interface Property {
   id: number
   name: string
@@ -26,8 +26,17 @@ export const getPropertyById = async (id: number) => {
   return await Properties().where('id', id).first()
 }
 
-export const getUserProperties = async (userId: number) => {
-  return await Properties().where({ admin_id: userId })
+export const getPropertyByIds = async (ids: number[]) => {
+  return await Properties().whereIn('id', ids)
+}
+
+export const getAllUserProperties = async (userId: number) => {
+  const adminProperties = await Properties().where({ admin_id: userId })
+  const userProperties = await getUserProperties(userId)
+  const properties = await getPropertyByIds(userProperties.map((p) => p.property_id))
+
+  return [...adminProperties, ...properties]
+    .filter((property, index, self) => self.findIndex((p) => p.id === property.id) === index)
 }
 
 export const propertyToJSON = (property: Property) => ({

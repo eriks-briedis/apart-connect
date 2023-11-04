@@ -6,7 +6,7 @@ const API_URL = 'http://localhost:5005'
 async function makeRequest(
   endpoint: string,
   method: 'GET' | 'POST' | 'PATCH' | 'PUT' = 'GET',
-  body?: Record<string, string>,
+  body?: Record<string, string | number>,
 ) {
   const authToken = getAuthToken()
   const headers: Record<string, string> = {
@@ -48,15 +48,15 @@ export async function GET(endpoint: string, queryParams?: Record<string, string>
   return await makeRequest(`${endpoint}${params}`, 'GET')
 }
 
-export async function POST(endpoint: string, body: Record<string, string>) {
+export async function POST(endpoint: string, body: Record<string, string | number>) {
   return await makeRequest(endpoint, 'POST', body)
 }
 
-export async function PATCH(endpoint: string, body: Record<string, string>) {
+export async function PATCH(endpoint: string, body: Record<string, string | number>) {
   return await makeRequest(endpoint, 'PATCH', body)
 }
 
-export async function PUT(endpoint: string, body: Record<string, string>) {
+export async function PUT(endpoint: string, body: Record<string, string | number>) {
   return await makeRequest(endpoint, 'PUT', body)
 }
 

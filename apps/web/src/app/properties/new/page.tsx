@@ -1,11 +1,10 @@
 'use client'
 
-import Link from 'next/link'
+import { PageHeader } from '@/app/components'
+import { useRouter } from 'next/navigation'
 import { FormEvent, useCallback, useEffect, useState } from 'react'
 import { Input, SubmitButton } from 'ui'
 import { useCreateProperty } from '../hooks'
-import { useRouter } from 'next/navigation'
-import PropertyHeader from '../components/propertyHeader'
 
 export default function NewProperty() {
   const router = useRouter()
@@ -45,7 +44,7 @@ export default function NewProperty() {
 
   return (
     <div>
-      <PropertyHeader header="Jauna māja" backLink="/properties"></PropertyHeader>
+      <PageHeader header="Jauna māja" backLink="/properties"></PageHeader>
       <div className="py-2 px-4">
         <p className="pb-4">
           Aizpildi šo formu, lai pievienotu jaunu māju.
