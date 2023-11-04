@@ -21,6 +21,10 @@ export const getUserById = async (id: number) => {
   return await Users().where('id', id).first()
 }
 
+export const getUsersByIds = async (ids: number[]) => {
+  return await Users().whereIn('id', ids)
+}
+
 export const getUserByEmail = async (email: string) => {
   return await Users().where('email', email).first()
 }

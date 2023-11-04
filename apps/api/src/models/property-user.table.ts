@@ -1,6 +1,6 @@
 import { knexInstance } from '../db/knexfile'
-import { Property } from './property.table'
-import { User } from './user.table'
+import { Property, getPropertyById } from './property.table'
+import { User, getUserById, getUsersByIds } from './user.table'
 
 export interface PropertyUser {
   id: number
@@ -24,7 +24,6 @@ export const isUserAttachedToProperty = async (propertyId: number, userId: numbe
 
 export const doesUserBelongToProperty = async (property: Property, user: User) => {
   const isUserAttached = await isUserAttachedToProperty(property.id, user.id)
-  console.log(`Is user attached: ${isUserAttached}`)
   const isUserAdmin = user.id == property.admin_id
 
   return isUserAttached || isUserAdmin
@@ -45,4 +44,14 @@ export const detachUserFromProperty = async (propertyId: number, userId: number)
 
 export const getUserProperties = async (userId: number) => {
   return await PropertyUsers().where({ user_id: userId })
+}
+
+export const getAllPropertyUsers = async (propertyId: number) => {
+  const property = await getPropertyById(propertyId)
+  const propertyUsers = await PropertyUsers().where({ property_id: propertyId })
+  const adminUser = await getUserById(property.admin_id)
+  const users = await getUsersByIds(propertyUsers.map((pu) => pu.user_id))
+
+  return [...users, adminUser]
+    .filter((user, index, self) => self.findIndex((u) => u.id === user.id) === index)
 }

@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { ResolutionStatus, ResolutionType, attachUserToProperty, createProperty, createResolution, detachUserFromProperty, doesUserBelongToProperty, getAllUserProperties, getPropertyById, getResolutionsByPropertyId, isUserAttachedToProperty, propertyToJSON, resolutionToJSON } from '../models'
+import { ResolutionStatus, ResolutionType, attachUserToProperty, createProperty, createResolution, detachUserFromProperty, doesUserBelongToProperty, getAllPropertyUsers, getAllUserProperties, getPropertyById, getResolutionsByPropertyId, isUserAttachedToProperty, propertyToJSON, resolutionToJSON, userToJSON } from '../models'
 import { routeGuard } from '../utils'
 
 export const propertiesRouter = Router()
@@ -182,27 +182,27 @@ propertiesRouter.get('/:propertyId/resolutions', async (req, res) => {
   res.json({ successs: true, data: resolutions.map(resolutionToJSON) })
 })
 
-// propertiesRouter.get('/:propertyId/users', async (req, res) => {
-//   const propertyId = parseInt(req.params.propertyId, 10)
+propertiesRouter.get('/:propertyId/users', async (req, res) => {
+  const propertyId = parseInt(req.params.propertyId, 10)
 
-//   if (!propertyId) {
-//     res.status(400).json({ error: 'Missing required fields' })
-//     return
-//   }
+  if (!propertyId) {
+    res.status(400).json({ error: 'Missing required fields' })
+    return
+  }
 
-//   const property = await getPropertyById(propertyId)
-//   if (!property) {
-//     res.status(400).json({ error: 'Invalid property' })
-//     return
-//   }
+  const property = await getPropertyById(propertyId)
+  if (!property) {
+    res.status(400).json({ error: 'Invalid property' })
+    return
+  }
 
-//   const canView = await isUserAttachedToProperty(req.user.id, propertyId)
-//   if (!canView && property.admin_id !== req.user.id) {
-//     res.status(400).json({ error: 'Invalid property' })
-//     return
-//   }
+  const canView = await doesUserBelongToProperty(property, req.user)
+  if (!canView) {
+    res.status(400).json({ error: 'Invalid property' })
+    return
+  }
 
-//   const users = await getUserProperties(propertyId)
+  const users = await getAllPropertyUsers(propertyId)
 
-//   res.json({ success: true, data: users.map(userToJSON) })
-// })
+  res.json({ success: true, data: users.map(userToJSON) })
+})
