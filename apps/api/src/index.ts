@@ -4,6 +4,7 @@ import { authRouter, invitationsRoute, notificationsRoute, votesRouter } from '.
 import { propertiesRouter } from './routes/properties.routes'
 import { usersRouter } from './routes/users.routes'
 import cors = require('cors')
+import { initiativesRoute } from './routes/initiatives.routes'
 
 const app = express()
 const port = process.env.PORT || 5005
@@ -19,6 +20,7 @@ app.use('/users', usersRouter)
 app.use('/vote', votesRouter)
 app.use('/invitations', invitationsRoute)
 app.use('/notifications', notificationsRoute)
+app.use('/initiatives', initiativesRoute)
 
 app.get('/', (_, res) => {
   res.json({ message: 'Welcome to ApartConnect API!' })

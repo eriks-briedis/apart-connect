@@ -1,5 +1,6 @@
 import { Router } from 'express'
-import { ResolutionStatus, ResolutionType, attachUserToProperty, createProperty, createResolution, detachUserFromProperty, doesUserBelongToProperty, getAllPropertyUsers, getAllUserProperties, getPropertyById, getResolutionsByPropertyId, isUserAttachedToProperty, propertyToJSON, resolutionToJSON, userToJSON } from '../models'
+import { ResolutionStatus, ResolutionType, attachUserToProperty, createProperty, createResolution, detachUserFromProperty, doesUserBelongToProperty, getAllPropertyUsers, getAllUserProperties, getPropertyById, isUserAttachedToProperty, propertyToJSON, userToJSON } from '../models'
+import { getInitiativesByPropertyId, initiativeToJSON } from '../models/initiative'
 import { routeGuard } from '../utils'
 
 export const propertiesRouter = Router()
@@ -154,10 +155,10 @@ propertiesRouter.post('/:propertyId/resolutions', async (req, res) => {
 })
 
 /**
- * GET /properties/:propertyId/resolutions
- * Lists all resolutions for a property
+ * GET /properties/:propertyId/initiatives
+ * Lists all initiatives for a property
  */
-propertiesRouter.get('/:propertyId/resolutions', async (req, res) => {
+propertiesRouter.get('/:propertyId/initiatives', async (req, res) => {
   const propertyId = parseInt(req.params.propertyId, 10)
 
   if (!propertyId) {
@@ -171,15 +172,15 @@ propertiesRouter.get('/:propertyId/resolutions', async (req, res) => {
     return
   }
 
-  const canView = await isUserAttachedToProperty(req.user.id, propertyId)
-  if (!canView && property.admin_id !== req.user.id) {
+  const canView = await doesUserBelongToProperty(property, req.user)
+  if (!canView) {
     res.status(400).json({ error: 'Invalid property' })
     return
   }
 
-  const resolutions = await getResolutionsByPropertyId(propertyId)
+  const initiatives = await getInitiativesByPropertyId(propertyId)
 
-  res.json({ successs: true, data: resolutions.map(resolutionToJSON) })
+  res.json({ success: true, data: initiatives.map(initiativeToJSON) })
 })
 
 propertiesRouter.get('/:propertyId/users', async (req, res) => {

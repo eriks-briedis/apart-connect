@@ -60,7 +60,7 @@ export default function AddResidentPage({ params }: any) {
           </div>
         )}
         <form onSubmit={onFormSubmit}>
-          <Input type="emaik" name="email" placeholder="Epasts" required value={email} onChange={setEmail}>
+          <Input type="email" name="email" placeholder="Epasts" required value={email} onChange={setEmail}>
             Epasts
           </Input>
 

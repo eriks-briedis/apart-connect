@@ -1,5 +1,6 @@
 export * from './building-icon'
 export * from './check-icon'
+export * from './document-text-icon'
 export * from './plus-icon'
 export * from './x-mark-icon'
 export * from './user-icon'

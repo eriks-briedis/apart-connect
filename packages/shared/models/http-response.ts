@@ -4,5 +4,6 @@ export interface HTTPResponse<T> {
 }
 
 export interface HTTPAcceptResponse {
+  success: boolean
   message: string
 }

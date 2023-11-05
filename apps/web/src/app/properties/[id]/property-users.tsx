@@ -1,6 +1,5 @@
 import { Card } from "@/app/components"
 import { GET } from "@/app/utils"
-import { get } from "http"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { UserModel } from "shared"
