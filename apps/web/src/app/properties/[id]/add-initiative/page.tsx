@@ -2,11 +2,15 @@
 
 import { PageHeader } from '@/app/components'
 import { POST } from '@/app/utils'
-import { useCallback, useEffect, useState } from 'react'
-import { Input, SubmitButton } from 'ui'
-import { useGetProperty } from '../../hooks'
+import { FormControl, FormControlLabel, FormLabel, MenuItem, Radio, RadioGroup, Select } from '@mui/material'
 import TextField from '@mui/material/TextField'
-import { Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material'
+import { useCallback, useEffect, useState } from 'react'
+import { SubmitButton } from 'ui'
+import { useGetProperty } from '../../hooks'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import moment from 'moment'
+import { LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 
 export default function AddResidentPage({ params }: any) {
   const [formValue, setFormValue] = useState({
@@ -14,6 +18,7 @@ export default function AddResidentPage({ params }: any) {
     description: '',
     type: 'poll',
     status: 'draft',
+    expiresAt: moment().add(1, 'week'),
     requiresSignature: false,
   })
   const [success, setSuccess] = useState<boolean>(false)
@@ -48,7 +53,15 @@ export default function AddResidentPage({ params }: any) {
   const onFormSubmit = async (e: any) => {
     e.preventDefault()
 
-    const response = await POST(`/initiatives`, { ...formValue, propertyId: id })
+    const response = await POST(`/initiatives`, {
+      label: formValue.label,
+      description: formValue.description,
+      type: formValue.type,
+      status: formValue.status,
+      expiresAt: formValue.expiresAt.toISOString(),
+      requiresSignature: formValue.requiresSignature,
+      propertyId: id,
+    })
     if (!response.success) {
       alert('Neizdevās izveidot aptauju')
       return
@@ -60,6 +73,7 @@ export default function AddResidentPage({ params }: any) {
       description: '',
       type: 'poll',
       status: 'draft',
+      expiresAt: moment().add(1, 'week'),
       requiresSignature: false,
     })
   }
@@ -125,6 +139,26 @@ export default function AddResidentPage({ params }: any) {
                 />
               </RadioGroup>
             </FormControl>
+          </div>
+
+          <div className="mb-4">
+            <LocalizationProvider dateAdapter={AdapterMoment}>
+              <DatePicker
+                className="w-full"
+                label="Aptaujas beigu datums"
+                minDate={moment().add(1, 'day')}
+                value={formValue.expiresAt}
+                onChange={(date: any) => updateFormValue('expiresAt', date)}
+              />
+            </LocalizationProvider>
+          </div>
+
+          <div className="mb-4">
+            <Select label="Statuss" className="w-full" value={formValue.status} onChange={(e) => updateFormValue('status', e.target.value)}>
+              <MenuItem value="draft">Melnraksts</MenuItem>
+              <MenuItem value="published">Publicēts</MenuItem>
+              <MenuItem value="closed">Aizvērts</MenuItem>
+            </Select>
           </div>
 
           <SubmitButton>

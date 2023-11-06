@@ -44,11 +44,12 @@ export function PropertyInitiatives({ propertyId }: PropertyInitiativeProps) {
       </div>
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2">
         {initiatives.map((initiative) => (
-          <Card
-            key={initiative.id}
-            icon={<DocumentTextIcon className="w-12 h-12 stroke-current" />}
-            title={initiative.label}
-          />
+          <Link href={`/properties/${propertyId}/initiatives/${initiative.id}`} key={initiative.id}>
+            <Card
+              icon={<DocumentTextIcon className="w-12 h-12 stroke-current" />}
+              title={initiative.label}
+            />
+          </Link>
         ))}
         <Link href={`/properties/${propertyId}/add-initiative`}>
           <Card

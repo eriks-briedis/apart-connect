@@ -1,11 +1,15 @@
 'use client'
 
-import { MainLayout } from "../components"
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import { MainLayout } from '../components'
 
 export default function PropertiesLayout({ children }: { children: React.ReactNode }) {
   return (
-    <MainLayout>
-      {children}
-    </MainLayout>
+    <LocalizationProvider dateAdapter={AdapterMoment}>
+      <MainLayout>
+        {children}
+      </MainLayout>
+    </LocalizationProvider>
   )
 }

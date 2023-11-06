@@ -27,6 +27,10 @@ export const createInitiative = async (initiative: Partial<Initative>) => {
   return result[0]
 }
 
+export const getInitiativeById = async (id: number) => {
+  return await Initiatives().where({ id }).first()
+}
+
 export const getInitiativesByPropertyId = async (propertyId: number) => {
   return await Initiatives().where({ property_id: propertyId })
 }

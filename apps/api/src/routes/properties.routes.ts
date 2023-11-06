@@ -1,6 +1,5 @@
 import { Router } from 'express'
-import { ResolutionStatus, ResolutionType, attachUserToProperty, createProperty, createResolution, detachUserFromProperty, doesUserBelongToProperty, getAllPropertyUsers, getAllUserProperties, getPropertyById, isUserAttachedToProperty, propertyToJSON, userToJSON } from '../models'
-import { getInitiativesByPropertyId, initiativeToJSON } from '../models/initiative'
+import { ResolutionStatus, ResolutionType, attachUserToProperty, createProperty, createResolution, detachUserFromProperty, doesUserBelongToProperty, getAllPropertyUsers, getAllUserProperties, getInitiativesByPropertyId, getPropertyById, initiativeToJSON, isUserAttachedToProperty, propertyToJSON, userToJSON } from '../models'
 import { routeGuard } from '../utils'
 
 export const propertiesRouter = Router()

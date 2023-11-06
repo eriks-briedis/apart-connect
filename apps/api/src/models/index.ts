@@ -1,3 +1,4 @@
+export * from './initiative.model'
 export * from './user.table'
 export * from './property.table'
 export * from './property-user.table'

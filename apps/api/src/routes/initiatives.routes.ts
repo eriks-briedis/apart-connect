@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { routeGuard } from '../utils'
-import { createInitiative, initiativeToJSON } from '../models/initiative'
+import { createInitiative, getInitiativeById, initiativeToJSON } from '../models'
 
 export const initiativesRoute = Router()
 
@@ -33,6 +33,13 @@ initiativesRoute.post('/', async (req, res) => {
     property_id: propertyId,
     created_by: req.user.id,
   })
+
+  res.json({ success: true, data: initiativeToJSON(initiative) })
+})
+
+initiativesRoute.get('/:initiativeId', async (req, res) => {
+  const initiativeId = parseInt(req.params.initiativeId, 10)
+  const initiative = await getInitiativeById(initiativeId)
 
   res.json({ success: true, data: initiativeToJSON(initiative) })
 })
