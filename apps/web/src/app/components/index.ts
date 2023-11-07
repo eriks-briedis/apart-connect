@@ -1,4 +1,5 @@
 export * from './card'
+export * from './loading'
 export * from './mainLayout'
 export * from './pageHeader'
 export * from './linkButton'

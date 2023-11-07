@@ -2,32 +2,13 @@
 
 import { PageHeader } from "@/app/components"
 import { GET } from "@/app/utils"
-import { useEffect, useState } from "react"
-import { InitiativeModel } from "shared"
+import { HTTPResponse, InitiativeModel } from "shared"
+import useSWR from "swr"
 
 export default function Initiative({ params }: any) {
   const { id, initiativeId } = params
-  const [initiative, setInitiative] = useState<InitiativeModel | null>(null)
-
-  useEffect(() => {
-    if (!initiativeId) {
-      return
-    }
-
-    const getInitiative = async () => {
-      const response = await GET(`/initiatives/${initiativeId}`)
-      if (!response.success) {
-        alert('Neizdevās ielādēt aptauju')
-        return
-      }
-      setInitiative(response.data)
-    }
-
-    getInitiative().catch((e) => {
-      console.error(e)
-      alert('Neizdevās ielādēt aptauju')
-    })
-  }, [initiativeId])
+  const { data } = useSWR<HTTPResponse<InitiativeModel>>(`/initiatives/${initiativeId}`, GET)
+  const initiative = data?.data
 
   return (
     <>

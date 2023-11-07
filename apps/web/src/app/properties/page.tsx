@@ -1,33 +1,16 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { useProperties } from './hooks'
-import { Card, PageHeader } from '../components'
-import { PropertyModel } from 'shared'
+import { useEffect } from 'react'
+import { HTTPResponse, PropertyModel } from 'shared'
+import useSWR from 'swr'
 import { BuildingIcon, PlusIcon } from 'ui'
+import { Card, PageHeader } from '../components'
+import { GET } from '../utils'
 
 export default function Properties() {
-  const [response, getPropertiesResponse] = useProperties()
-  const [properties, setProperties] = useState<PropertyModel[] | undefined>([])
-
-  useEffect(() => {
-    getPropertiesResponse()
-  }, [])
-
-  useEffect(() => {
-    if (!response) {
-      return
-    }
-
-    if (!response.success) {
-      // @TODO: handle error
-      alert('Neizdevās ielādēt mājas')
-      return
-    }
-
-    setProperties(response.data)
-  }, [response])
+  const { data } = useSWR<HTTPResponse<PropertyModel[]>>(`/properties`, GET)
+  const properties = data?.data
 
   return (
     <div>

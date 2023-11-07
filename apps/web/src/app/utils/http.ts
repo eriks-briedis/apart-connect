@@ -1,24 +1,23 @@
-import { getAuthToken } from "./token"
-
-// @TODO: Update this to use the API_URL from the environment
-const API_URL = 'http://localhost:5005'
+import { getAuthToken } from './token'
 
 async function makeRequest(
   endpoint: string,
   method: 'GET' | 'POST' | 'PATCH' | 'PUT' = 'GET',
   body?: Record<string, string | number | boolean>,
 ) {
+  const baseUrl = process.env.API_URL
   const authToken = getAuthToken()
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   }
+
 
   if (authToken) {
     headers['Authorization'] = `Bearer ${authToken}`
   }
 
   try {
-    const response = await fetch(`${API_URL}${endpoint}`, {
+    const response = await fetch(`${baseUrl}${endpoint}`, {
       method,
       headers,
       body: JSON.stringify(body),

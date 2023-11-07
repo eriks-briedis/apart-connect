@@ -3,8 +3,9 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createContext, useEffect, useState } from 'react'
-import { useCheckUser } from '../hooks/useCheckUser'
-import { UserLoginModel } from 'shared'
+import { HTTPResponse, UserLoginModel } from 'shared'
+import useSWR, { useSWRConfig } from 'swr'
+import { GET } from '../utils'
 
 export interface UserContextProps {
   user: UserLoginModel | null
@@ -15,26 +16,23 @@ export const UserContext = createContext<UserContextProps | null>(null)
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
-  const [userResponse, setUserResponse] = useCheckUser()
+  const { mutate } = useSWRConfig()
+  const { data } = useSWR<HTTPResponse<UserLoginModel>>('/auth/me', GET)
   const [unreadNotifications, setUnreadNotifications] = useState<number>(0)
   const [user, setUser] = useState<UserLoginModel | null>(null)
 
   useEffect(() => {
-    setUserResponse()
-  }, [])
-
-  useEffect(() => {
-    if (!userResponse) {
+    if (!data) {
       return
     }
 
-    if (!userResponse.success) {
+    if (!data.success) {
       router.push('/auth/login')
       return
     }
 
-    setUser(userResponse.data ?? null)
-  }, [userResponse, router])
+    setUser(data.data ?? null)
+  }, [data, router])
 
   useEffect(() => {
     if (!user) {
@@ -46,7 +44,8 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
   }, [user])
 
   const onRefreshUser = () => {
-    setUserResponse()
+    debugger
+    mutate('/auth/me')
   }
 
   const onLogout = () => {

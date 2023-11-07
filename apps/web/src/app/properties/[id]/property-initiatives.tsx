@@ -1,8 +1,8 @@
-import { Card } from "@/app/components"
+import { Card, Loading } from "@/app/components"
 import { GET } from "@/app/utils"
 import Link from "next/link"
-import { useEffect, useState } from "react"
-import { InitiativeModel } from "shared"
+import { HTTPResponse, InitiativeModel } from "shared"
+import useSWR from "swr"
 import { DocumentTextIcon, PlusIcon } from "ui"
 
 export interface PropertyInitiativeProps {
@@ -10,32 +10,20 @@ export interface PropertyInitiativeProps {
 }
 
 export function PropertyInitiatives({ propertyId }: PropertyInitiativeProps) {
-  const [initiatives, setInitiatives] = useState<InitiativeModel[]>([])
-  const [loading, setLoading] = useState<boolean>(false)
+  const { data } = useSWR<HTTPResponse<InitiativeModel[]>>(`/properties/${propertyId}/initiatives`, GET)
+  const initiatives = data?.data
 
-  useEffect(() => {
-    if (!propertyId) {
-      return
-    }
+  if (!data) {
+    return
+  }
 
-    const getInitiatives = async () => {
-      const response = await GET(`/properties/${propertyId}/initiatives`)
-      setLoading(false)
-
-      if (!response.success) {
-        alert('Neizdevās ielādēt aptaujas')
-        return
-      }
-      setInitiatives(response.data)
-    }
-
-    setLoading(true)
-    getInitiatives().catch((e) => {
-      setLoading(false)
-      alert('Neizdevās ielādēt aptaujas')
-    })
-
-  }, [propertyId])
+  if (!initiatives) {
+    return (
+      <div>
+        <p>Something went wrong</p>
+      </div>
+    )
+  }
 
   return (
     <div className="px-4 py-2">
