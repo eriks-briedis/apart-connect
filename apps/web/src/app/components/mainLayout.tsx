@@ -1,4 +1,3 @@
-
 'use client'
 
 import Link from 'next/link'
@@ -8,7 +7,7 @@ import { useCheckUser } from '../hooks/useCheckUser'
 import { UserLoginModel } from 'shared'
 
 export interface UserContextProps {
-  user: UserLoginModel
+  user: UserLoginModel | null
   refreshUser: () => void
 }
 
