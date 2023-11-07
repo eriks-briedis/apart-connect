@@ -14,7 +14,7 @@ export const knexConfig: Knex.Config = {
   },
   migrations: {
     extension: 'ts',
-    directory: 'src/db/migrations',
+    directory: './migrations',
     tableName: 'migrations_history',
   },
 }
