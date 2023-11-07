@@ -1,6 +1,9 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
+  "globalEnv": [
+    "GITHUB_TOKEN"
+  ],
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
