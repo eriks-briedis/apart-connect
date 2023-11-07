@@ -8,7 +8,7 @@ import cors = require('cors')
 const app = express()
 const port = process.env.PORT || 5005
 app.use(express.json())
-app.use(cors({ origin: '*' }))
+app.use(cors())
 
 // Routes
 app.use('/auth', authRouter)
