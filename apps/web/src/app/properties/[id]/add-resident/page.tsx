@@ -74,7 +74,7 @@ export default function AddResidentPage({ params }: any) {
         {inviteLink && (
           <>
             Atverot šo saiti un reģistrējoties, iedzīvotājs tiks pievienots mājas iedzīvotāju sarakstam:
-            <code className="text-sm bg-slate-300 p-3 mt-2 mb-4 inline-block rounded-md">
+            <code className="text-sm bg-slate-300 p-3 mt-2 mb-4 inline-block rounded-md break-all">
               {inviteLink}
             </code>
           </>
