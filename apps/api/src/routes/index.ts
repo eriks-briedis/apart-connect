@@ -1,4 +1,5 @@
 export * from './authorization.routes'
+export * from './initiatives.routes'
 export * from './invitations.routes'
 export * from './notifications.routes'
 export * from './properties.routes'

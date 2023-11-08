@@ -7,6 +7,7 @@ export interface RegisterInput {
   password: string
   firstName: string
   lastName: string
+  token?: string
 }
 
 export function useRegister(): [HTTPAcceptResponse | null, (input: RegisterInput) => Promise<any>] {

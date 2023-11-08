@@ -1,21 +1,10 @@
 import { knexInstance } from '../db/knexfile'
 
-export enum VoteType {
-  SIGNED = 'signed',
-  SIMPLE = 'simple'
-}
-
-export enum VoteValue {
-  YES = 'Y',
-  NO = 'N'
-}
-
 export interface Vote {
   id: number
   user_id: number
-  resolution_id: number
-  value: VoteValue
-  type: VoteType
+  initiative_id: number
+  value: boolean
   created_at: Date
   updated_at: Date
 }
@@ -28,4 +17,8 @@ export const createVote = async (vote: Partial<Vote>) => {
     created_at: new Date(),
     updated_at: new Date(),
   })
+}
+
+export const getVotesByInitiativeId = async (initiativeId: number) => {
+  return await Votes().where({ initiative_id: initiativeId })
 }

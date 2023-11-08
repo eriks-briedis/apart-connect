@@ -2,7 +2,7 @@ import { getAuthToken } from './token'
 
 async function makeRequest(
   endpoint: string,
-  method: 'GET' | 'POST' | 'PATCH' | 'PUT' = 'GET',
+  method: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' = 'GET',
   body?: Record<string, string | number | boolean>,
 ) {
   const baseUrl = process.env.API_URL
@@ -62,6 +62,10 @@ export async function PATCH(endpoint: string, body: Record<string, string | numb
 
 export async function PUT(endpoint: string, body: Record<string, string | number>) {
   return await makeRequest(endpoint, 'PUT', body)
+}
+
+export async function DELETE(endpoint: string) {
+  return await makeRequest(endpoint, 'DELETE')
 }
 
 export class HttpResponseError extends Error {

@@ -2,8 +2,8 @@ export type InvitationStatus = 'pending' | 'accepted' | 'expired'
 
 export interface InvitationModel {
   id: number
-  email: string
-  userId: number
+  email?: string
+  userId?: number
   invitedBy: number
   token: string
   propertyId: number

@@ -6,7 +6,9 @@ export interface InitiativeModel {
   type: 'poll' | 'majority' | 'unanimous'
   requiresSignature: boolean
   createdBy: number
-  propertyId: number
+  propertyId?: number
+  canVote?: boolean
+  totalVotes?: number
   expiresAt: Date
   createdAt: Date
   updatedAt: Date

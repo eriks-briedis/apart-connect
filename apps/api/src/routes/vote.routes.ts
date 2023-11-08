@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { ResolutionStatus, VoteType, createVote, doesUserBelongToProperty, getPropertyById, getResolutionById, isValidVoteTypeForResolution } from '../models'
+import { createVote, doesUserBelongToProperty, getInitiativeById, getPropertyById } from '../models'
 import { routeGuard } from '../utils'
 
 export const votesRouter = Router()
@@ -17,18 +17,27 @@ votesRouter.use(routeGuard)
  */
 votesRouter.post('/', async (req, res) => {
   const {
-    resolutionId,
-    value,
-    type = VoteType.SIMPLE,
+    initiativeId,
+    vote,
   } = req.body
 
-  if (!resolutionId || !value) {
+  if (!initiativeId || !vote) {
     res.status(400).json({ error: 'Missing required fields' })
     return
   }
 
-  const resolution = await getResolutionById(resolutionId)
-  const property = await getPropertyById(resolution.property_id)
+  const initiative = await getInitiativeById(initiativeId)
+  if (!initiative) {
+    res.status(404).json({ error: 'Initiative not found' })
+    return
+  }
+
+  const property = await getPropertyById(initiative.property_id)
+  if (!property) {
+    res.status(404).json({ error: 'Property not found' })
+    return
+  }
+
   const canVote = await doesUserBelongToProperty(property, req.user)
 
   if (!canVote) {
@@ -36,21 +45,15 @@ votesRouter.post('/', async (req, res) => {
     return
   }
 
-  if (resolution.status !== ResolutionStatus.OPEN) {
-    res.status(400).json({ error: 'Resolution is not open' })
-    return
-  }
-
-  if (!isValidVoteTypeForResolution(resolution, type)) {
-    res.status(400).json({ error: 'Invalid vote type for resolution' })
+  if (initiative.status !== 'open') {
+    res.status(400).json({ error: 'Initiative is not open' })
     return
   }
 
   await createVote({
-    resolution_id: resolutionId,
+    initiative_id: initiativeId,
     user_id: req.user.id,
-    value,
-    type,
+    value: vote,
   })
 
   res.json({ success: true, message: 'ok' })

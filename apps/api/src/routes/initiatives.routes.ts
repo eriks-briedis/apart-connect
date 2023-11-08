@@ -1,15 +1,15 @@
 import { Router } from 'express'
 import { routeGuard } from '../utils'
-import { createInitiative, getInitiativeById, initiativeToJSON } from '../models'
+import { canUserVoteForInitiative, createInitiative, getInitiativeById, getVotesByInitiativeId, initiativeToJSON, updateInitiative } from '../models'
 
-export const initiativesRoute = Router()
+export const initiativesRouter = Router()
 
 /**
  * All routes in this file are protected by the routeGuard middleware
  */
-initiativesRoute.use(routeGuard)
+initiativesRouter.use(routeGuard)
 
-initiativesRoute.post('/', async (req, res) => {
+initiativesRouter.post('/', async (req, res) => {
   const {
     label,
     description,
@@ -34,12 +34,56 @@ initiativesRoute.post('/', async (req, res) => {
     created_by: req.user.id,
   })
 
+  if (!initiative) {
+    res.status(500).json({ error: 'Failed to create initiative' })
+    return
+  }
+
   res.json({ success: true, data: initiativeToJSON(initiative) })
 })
 
-initiativesRoute.get('/:initiativeId', async (req, res) => {
+initiativesRouter.get('/:initiativeId', async (req, res) => {
   const initiativeId = parseInt(req.params.initiativeId, 10)
   const initiative = await getInitiativeById(initiativeId)
 
-  res.json({ success: true, data: initiativeToJSON(initiative) })
+  if (!initiative) {
+    res.status(404).json({ error: 'Initiative not found' })
+    return
+  }
+
+  const votes = await getVotesByInitiativeId(initiative.id)
+  const canVote = await canUserVoteForInitiative(initiative, req.user)
+
+  res.json({
+    success: true,
+    data: {
+      ...initiativeToJSON(initiative),
+      canVote,
+      totalVotes: votes.length,
+    },
+  })
+})
+
+initiativesRouter.post('/:initiativeId/publish', async (req, res) => {
+  const initiativeId = parseInt(req.params.initiativeId, 10)
+  const initiative = await getInitiativeById(initiativeId)
+
+  if (!initiative) {
+    res.status(404).json({ error: 'Initiative not found' })
+    return
+  }
+
+  if (initiative.status !== 'draft') {
+    res.status(400).json({ error: 'Initiative is not draft' })
+    return
+  }
+
+  if (initiative.created_by !== req.user.id) {
+    res.status(400).json({ error: 'Only the creator can publish the initiative' })
+    return
+  }
+
+  await updateInitiative(initiativeId, { status: 'open' })
+
+  res.json({ success: true, message: 'ok' })
 })

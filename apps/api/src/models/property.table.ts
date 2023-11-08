@@ -8,6 +8,7 @@ export interface Property {
   city: string
   zip: string
   country: string
+  number_of_units: number
   admin_id: number
   created_at: Date
   updated_at: Date
@@ -21,6 +22,19 @@ export const createProperty = async (property: Partial<Property>) => {
     created_at: new Date(),
     updated_at: new Date(),
   })
+}
+
+export const updateProperty = async (id: number, property: Partial<Property>) => {
+  const results = await Properties().where({ id }).update({
+    ...property,
+    updated_at: new Date(),
+  }).returning('*')
+
+  return results[0]
+}
+
+export const deleteProperty = async (id: number) => {
+  return await Properties().where({ id }).del()
 }
 
 export const getPropertyById = async (id: number) => {
@@ -47,6 +61,7 @@ export const propertyToJSON = (property: Property): PropertyModel => ({
   city: property.city,
   zip: property.zip,
   country: property.country,
+  numberOfUnits: property.number_of_units,
   updatedAt: property.updated_at,
   createdAt: property.created_at,
 })

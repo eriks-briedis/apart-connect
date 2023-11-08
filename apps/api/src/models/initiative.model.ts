@@ -1,5 +1,9 @@
 import { InitiativeModel } from 'shared'
 import { knexInstance } from '../db/knexfile'
+import { doesUserBelongToProperty } from './property-user.table'
+import { User } from './user.table'
+import { getPropertyById } from './property.table'
+import { getVotesByInitiativeId } from './vote.table'
 
 export interface Initative {
   id: number
@@ -25,6 +29,29 @@ export const createInitiative = async (initiative: Partial<Initative>) => {
   }).returning('*')
 
   return result[0]
+}
+
+export const updateInitiative = async (id: number, initiative: Partial<Initative>) => {
+  return await Initiatives().where({ id }).update({
+    ...initiative,
+    updated_at: new Date(),
+  })
+}
+
+export const canUserVoteForInitiative = async (initiative: Initative, user: User) => {
+  const property = await getPropertyById(initiative.property_id)
+  if (!property) {
+    return false
+  }
+  const isUserAttached = await doesUserBelongToProperty(property, user)
+  if (!isUserAttached) {
+    return false
+  }
+
+  const votes = await getVotesByInitiativeId(initiative.id)
+
+  // check if user has already voted
+  return !votes.some((vote) => vote.user_id === user.id)
 }
 
 export const getInitiativeById = async (id: number) => {

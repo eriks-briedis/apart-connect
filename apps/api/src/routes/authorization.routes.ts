@@ -1,6 +1,6 @@
 import { compareSync, hash } from 'bcrypt'
 import { Router } from 'express'
-import { createUser, createUserToken, getUserByEmail, userToJSON } from '../models'
+import { attachUserToProperty, createUser, createUserToken, getInvitationByToken, getUserByEmail, userToJSON } from '../models'
 import { getUserFromToken } from '../utils'
 import { getNotificationsByUserId, notificationToJSON } from '../models/notification.model'
 
@@ -73,6 +73,7 @@ authRouter.post('/register', async (req, res) => {
     password,
     firstName,
     lastName,
+    token,
   } = req.body
 
   if (!email || !password || !firstName || !lastName) {
@@ -82,7 +83,18 @@ authRouter.post('/register', async (req, res) => {
 
   const passwordHash = await hash(password, saltRounds)
 
-  await createUser({ email, passwordHash, first_name: firstName, last_name: lastName })
+  const user = await createUser({ email, passwordHash, first_name: firstName, last_name: lastName })
+  if (!user) {
+    res.status(500).json({ error: 'Failed to create user' })
+    return
+  }
+
+  if (token) {
+    const invitation = await getInvitationByToken(token)
+    if (invitation) {
+      await attachUserToProperty(invitation.property_id, user.id)
+    }
+  }
 
   res.json({ success: true, message: 'ok' })
 })

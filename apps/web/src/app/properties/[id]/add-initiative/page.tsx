@@ -97,23 +97,27 @@ export default function AddResidentPage({ params }: any) {
           </div>
         )}
         <form onSubmit={onFormSubmit} className="py-2">
-          <TextField
-            required
-            label="Nosaukums"
-            className="w-full mb-4"
-            value={formValue.label}
-            onChange={(e) => updateFormValue('label', e.target.value)}
-          />
+          <div className="mb-4">
+            <TextField
+              required
+              label="Nosaukums"
+              className="w-full"
+              value={formValue.label}
+              onChange={(e) => updateFormValue('label', e.target.value)}
+            />
+          </div>
 
-          <TextField
-            label="Apraksts par aptauju"
-            className="w-full mb-4"
-            multiline
-            required
-            rows={4}
-            value={formValue.description}
-            onChange={(e) => updateFormValue('description', e.target.value)}
-          />
+          <div className="mb-4">
+            <TextField
+              label="Apraksts par aptauju"
+              className="w-full"
+              multiline
+              required
+              rows={4}
+              value={formValue.description}
+              onChange={(e) => updateFormValue('description', e.target.value)}
+            />
+          </div>
 
           <div className="mb-4">
             <FormControl>
@@ -156,7 +160,7 @@ export default function AddResidentPage({ params }: any) {
           <div className="mb-4">
             <Select label="Statuss" className="w-full" value={formValue.status} onChange={(e) => updateFormValue('status', e.target.value)}>
               <MenuItem value="draft">Melnraksts</MenuItem>
-              <MenuItem value="published">Publicēts</MenuItem>
+              <MenuItem value="open">Publicēts</MenuItem>
               <MenuItem value="closed">Aizvērts</MenuItem>
             </Select>
           </div>

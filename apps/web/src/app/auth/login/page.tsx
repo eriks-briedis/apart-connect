@@ -1,8 +1,9 @@
 'use client'
 
+import { TextField } from "@mui/material"
 import { useRouter } from "next/navigation"
 import { FormEvent, useEffect, useState } from "react"
-import { Input, SubmitButton } from "ui"
+import { SubmitButton } from "ui"
 import { useLogin } from "./hooks"
 
 export default function Login() {
@@ -32,15 +33,33 @@ export default function Login() {
 
   return (
     <>
-      <h5 className="text-center mb-4">Login</h5>
+      <p className="text-center mb-4">
+        Lūdzu ievadi savu epastu un paroli, lai ienāktu sistēmā.
+      </p>
       <form onSubmit={onSubmit}>
-        <Input type="email" name="email" placeholder="Epasts" required value={email} onChange={setEmail}>
-          Epasts
-        </Input>
+        <div className="mb-4">
+          <TextField
+            type="email"
+            label="Epasts"
+            placeholder="Epasts"
+            className="w-full"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
 
-        <Input type="password" name="password" placeholder="Parole" required value={password} onChange={setPassword}>
-          Parole
-        </Input>
+        <div className="mb-4">
+          <TextField
+            type="password"
+            label="Parole"
+            placeholder="Parole"
+            className="w-full"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
 
         <div className="mb-4 text-center">
           <SubmitButton>Ienākt</SubmitButton>

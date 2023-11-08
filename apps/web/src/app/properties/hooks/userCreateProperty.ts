@@ -7,6 +7,7 @@ export interface CreatePropertyInput {
   city: string
   zip: string
   country: string
+  numberOfUnits: number
 }
 
 export function useCreateProperty(): [any, (input: CreatePropertyInput) => Promise<any>] {

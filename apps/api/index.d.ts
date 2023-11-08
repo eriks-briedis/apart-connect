@@ -1,4 +1,4 @@
-import { User } from "./src/models"
+import { User } from './src/models'
 
 // to make the file a module and avoid the TypeScript error
 export {}

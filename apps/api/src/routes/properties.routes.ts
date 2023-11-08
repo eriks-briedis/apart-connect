@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { ResolutionStatus, ResolutionType, attachUserToProperty, createProperty, createResolution, detachUserFromProperty, doesUserBelongToProperty, getAllPropertyUsers, getAllUserProperties, getInitiativesByPropertyId, getPropertyById, initiativeToJSON, isUserAttachedToProperty, propertyToJSON, userToJSON } from '../models'
+import { attachUserToProperty, createProperty, deleteProperty, detachUserFromProperty, doesUserBelongToProperty, getAllPropertyUsers, getAllUserProperties, getInitiativesByPropertyId, getPropertyById, initiativeToJSON, isUserAttachedToProperty, propertyToJSON, updateProperty, userToJSON } from '../models'
 import { routeGuard } from '../utils'
 
 export const propertiesRouter = Router()
@@ -71,6 +71,79 @@ propertiesRouter.get('/:propertyId', async (req, res) => {
 })
 
 /**
+ * PATCH /properties/:propertyId
+ * Updates a property
+ * Only the property admin can update it
+ */
+propertiesRouter.patch('/:propertyId', async (req, res) => {
+  const propertyId = parseInt(req.params.propertyId, 10)
+  const {
+    name,
+    address,
+    city,
+    zip,
+    country,
+    numberOfUnits,
+  } = req.body
+
+  if (!propertyId || !name || !address || !city || !zip || !country) {
+    res.status(400).json({ error: 'Missing required fields' })
+    return
+  }
+
+  const property = await getPropertyById(propertyId)
+  if (!property) {
+    res.status(400).json({ error: 'Invalid property' })
+    return
+  }
+
+  const canEdit = await doesUserBelongToProperty(property, req.user)
+  if (!property || !canEdit) {
+    res.status(400).json({ error: 'Invalid property' })
+    return
+  }
+
+  await updateProperty(
+    propertyId,
+    {
+      name,
+      address,
+      city,
+      zip,
+      country,
+      number_of_units: numberOfUnits,
+    },
+  )
+
+  res.json({ success: true, message: 'ok' })
+})
+
+propertiesRouter.delete('/:propertyId', async (req, res) => {
+  const propertyId = parseInt(req.params.propertyId, 10)
+
+  if (!propertyId) {
+    res.status(400).json({ error: 'Missing required fields' })
+    return
+  }
+
+  const property = await getPropertyById(propertyId)
+  if (!property) {
+    res.status(400).json({ error: 'Invalid property' })
+    return
+  }
+
+  const canDelete = await doesUserBelongToProperty(property, req.user)
+  if (!property || !canDelete) {
+    res.status(400).json({ error: 'Invalid property' })
+    return
+  }
+
+  await deleteProperty(propertyId)
+
+  res.json({ success: true, message: 'ok' })
+})
+
+/**
  * POST /properties/:propertyId/attach-user
  * Attaches a user to a property
  * Only the property admin can attach users
@@ -128,27 +201,6 @@ propertiesRouter.post('/:propertyId/detach-user', async (req, res) => {
   }
 
   await detachUserFromProperty(userId, propertyId)
-
-  res.json({ success: true, message: 'ok' })
-})
-
-propertiesRouter.post('/:propertyId/resolutions', async (req, res) => {
-  const propertyId = parseInt(req.params.propertyId, 10)
-  const {
-    label,
-    description,
-    status = ResolutionStatus.DRAFT,
-    type = ResolutionType.INFO,
-  } = req.body
-
-  await createResolution({
-    label,
-    description,
-    status,
-    type,
-    property_id: propertyId,
-    created_by: req.user.id,
-  })
 
   res.json({ success: true, message: 'ok' })
 })

@@ -8,7 +8,7 @@ export interface PageHeaderProps {
 
 export function PageHeader({ backLink, children, header }: PageHeaderProps): JSX.Element {
   return (
-    <div className="flex items-center justify-between h-14 pr-4 border-b border-b-gray-300">
+    <div className="flex items-center justify-between h-14 pr-4 border-b border-b-gray-300 z-10">
       <div className="flex">
         {backLink && (
           <Link href={backLink} className="w-8 flex items-center justify-center">
@@ -20,7 +20,7 @@ export function PageHeader({ backLink, children, header }: PageHeaderProps): JSX
         {!backLink && (
           <div className="w-4"></div>
         )}
-        <h1 className="text-xl">
+        <h1 className="text-base lg:text-xl">
           {header}
         </h1>
       </div>

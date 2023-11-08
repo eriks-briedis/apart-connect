@@ -1,12 +1,13 @@
 'use client'
 
-import { Loading, PageHeader } from '@/app/components'
+import { PageHeader } from '@/app/components'
 import { GET } from '@/app/utils'
 import { Suspense } from 'react'
+import { HTTPResponse, PropertyModel } from 'shared'
 import useSWR from 'swr'
 import { PropertyInitiatives } from './property-initiatives'
 import { PropertyUsers } from './property-users'
-import { HTTPResponse, PropertyModel } from 'shared'
+import Link from 'next/link'
 
 export default function PropertyPage({ params }: any) {
   const id = params.id
@@ -27,6 +28,12 @@ export default function PropertyPage({ params }: any) {
       </Suspense>
       <PropertyInitiatives propertyId={id} />
       <PropertyUsers propertyId={id} />
+
+      <div className="px-4 py-4 text-center">
+        <Link href={`/properties/${id}/edit`} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+          Edit property
+        </Link>
+      </div>
     </>
   )
 }

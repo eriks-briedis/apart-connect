@@ -1,6 +1,6 @@
 export interface CardProps {
   icon?: JSX.Element;
-  title: string;
+  title: JSX.Element | string;
   description?: string;
 }
 

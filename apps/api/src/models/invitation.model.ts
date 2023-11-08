@@ -7,8 +7,8 @@ import { InvitationModel, InvitationStatus } from 'shared'
 
 export interface Invitation {
   id: number
-  email: string
-  user_id: number
+  email?: string
+  user_id?: number
   invited_by: number
   token: string
   property_id: number
@@ -39,22 +39,33 @@ export const createInvitation = async (input: Partial<Invitation>) => {
 
   const invitation = result[0]
 
+  if (!invitation) {
+    throw new Error('Failed to create invitation')
+  }
+
   const property = await getPropertyById(invitation.property_id)
   if (!property) {
     throw new Error('Invalid property')
   }
 
-  const notificationUrl = `${process.env.APP_URL}/invitations/${invitation.token}`
+  const notificationUrl = createInvitationUrl(invitation)
 
-  await createNotification({
-    user_id: invitation.user_id,
-    title: 'Jūs esat saņēmis jaunu ielūgumu!',
-    message: `Jūs esat saņēmis uzaicinājumu pievienoties ${property.name}. Lūdzu, apskatiet un pieņemiet vai norietu uzaicinājumu`,
-    url: notificationUrl,
-    type: 'invitation',
-  })
+  if (invitation.user_id) {
+    await createNotification({
+      user_id: invitation.user_id,
+      title: 'Jūs esat saņēmis jaunu ielūgumu!',
+      message: `Jūs esat saņēmis uzaicinājumu pievienoties ${property.name}. Lūdzu, apskatiet un pieņemiet vai norietu uzaicinājumu`,
+      url: notificationUrl,
+      type: 'invitation',
+    })
+
+  }
 
   return invitation
+}
+
+export const createInvitationUrl = (invitation: Invitation, newUser = false) => {
+  return `${process.env.APP_URL}/${newUser ? 'auth/join' : 'invitations'}/${invitation.token}`
 }
 
 export const invitationToJSON = (invitation: Invitation): InvitationModel => ({

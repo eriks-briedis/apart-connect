@@ -44,7 +44,6 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
   }, [user])
 
   const onRefreshUser = () => {
-    debugger
     mutate('/auth/me')
   }
 
@@ -55,7 +54,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <div className="h-screen overflow-hidden border-t border-l border-r border-gray-400 px-3 py-10 bg-gray-200 flex justify-center pt-20 bg-[conic-gradient(at_top_left,_var(--tw-gradient-stops))] from-green-300 via-blue-500 to-purple-600">
+      <div className="min-h-screen overflow-hidden border-t border-l border-r border-gray-400 px-3 py-10 bg-gray-200 flex justify-center pt-20 bg-[conic-gradient(at_top_left,_var(--tw-gradient-stops))] from-green-300 via-blue-500 to-purple-600">
         <div className="fixed top-0 left-0 right-0 bg-white drop-shadow-md">
           <div className="h-14 flex justify-between items-center">
             <div className="text-2xl font-bold pl-4">

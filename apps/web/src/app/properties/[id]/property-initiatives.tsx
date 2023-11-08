@@ -35,7 +35,11 @@ export function PropertyInitiatives({ propertyId }: PropertyInitiativeProps) {
           <Link href={`/properties/${propertyId}/initiatives/${initiative.id}`} key={initiative.id}>
             <Card
               icon={<DocumentTextIcon className="w-12 h-12 stroke-current" />}
-              title={initiative.label}
+              title={(
+                <>
+                  {initiative.label} <small className="font-normal">{initiative.status}</small>
+                </>
+              )}
             />
           </Link>
         ))}

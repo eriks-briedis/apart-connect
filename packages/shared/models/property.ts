@@ -4,6 +4,7 @@ export interface PropertyModel {
   address: string
   city: string
   zip: string
+  numberOfUnits: number
   country: string
   createdAt: Date
   updatedAt: Date

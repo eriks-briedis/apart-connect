@@ -1,20 +1,20 @@
 import { Router } from 'express'
 import { routeGuard } from '../utils'
 import { attachUserToProperty, doesUserBelongToProperty, getPropertyById, getUserByEmail, isUserAttachedToProperty } from '../models'
-import { createInvitation, getInvitationByToken, invitationToJSON } from '../models/invitation.model'
+import { createInvitation, createInvitationUrl, getInvitationByToken, invitationToJSON } from '../models/invitation.model'
 import { markNotificationAsRead } from '../models/notification.model'
 
-export const invitationsRoute = Router()
+export const invitationsRouter = Router()
 
 /**
  * All routes in this file are protected by the routeGuard middleware
  */
-invitationsRoute.use(routeGuard)
+invitationsRouter.use(routeGuard)
 
-invitationsRoute.post('/', async (req, res) => {
+invitationsRouter.post('/', async (req, res) => {
   const { email, propertyId } = req.body
 
-  if (!email || !propertyId) {
+  if (!propertyId) {
     res.status(400).json({ error: 'Missing required fields' })
     return
   }
@@ -22,6 +22,21 @@ invitationsRoute.post('/', async (req, res) => {
   const property = await getPropertyById(propertyId)
   if (!property) {
     res.status(400).json({ error: 'Invalid property' })
+    return
+  }
+
+  if (!email) {
+    // create generic invitation
+    const invitation = await createInvitation({
+      property_id: property.id,
+      invited_by: req.user.id,
+    })
+    if (!invitation) {
+      res.status(500).json({ error: 'Failed to create invitation' })
+      return
+    }
+
+    res.json({ success: true, data: createInvitationUrl(invitation, true) })
     return
   }
 
@@ -38,14 +53,14 @@ invitationsRoute.post('/', async (req, res) => {
   const invitation = await createInvitation({
     email,
     property_id: property.id,
-    user_id: !!invitee ? invitee.id : null,
+    user_id: !!invitee ? invitee.id : undefined,
     invited_by: req.user.id,
   })
 
   res.json({ success: true, data: invitationToJSON(invitation) })
 })
 
-invitationsRoute.post('/accept', async (req, res) => {
+invitationsRouter.post('/accept', async (req, res) => {
   const { token } = req.body
 
   if (!token) {

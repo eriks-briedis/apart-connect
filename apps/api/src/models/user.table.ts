@@ -30,11 +30,13 @@ export const getUserByEmail = async (email: string) => {
 }
 
 export const createUser = async (user: Partial<User>) => {
-  return await Users().insert({
+  const result = await Users().insert({
     ...user,
     created_at: new Date(),
     updated_at: new Date(),
-  })
+  }).returning('*')
+
+  return result[0]
 }
 
 export const createUserToken = (user: Partial<User>) => {
