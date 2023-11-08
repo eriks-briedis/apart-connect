@@ -1,7 +1,15 @@
 export const AUTH_TOKEN_NAME = 'apart-connect-token'
 
 export function getAuthToken() {
-  return localStorage.getItem(AUTH_TOKEN_NAME)
+  try {
+    const token = localStorage.getItem(AUTH_TOKEN_NAME)
+    if (!token) {
+      return null
+    }
+    return token
+  } catch (e) {
+    return null
+  }
 }
 
 export function setAuthToken(token: string) {
