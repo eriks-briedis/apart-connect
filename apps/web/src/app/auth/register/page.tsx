@@ -1,16 +1,44 @@
 'use client'
 
+import { TextField } from '@mui/material'
 import { useRouter } from 'next/navigation'
-import { FormEvent, useEffect, useState } from 'react'
+import { FormEvent, useCallback, useEffect, useState } from 'react'
+import { SubmitButton } from 'ui'
 import { useRegister } from './hooks'
-import { Input, SubmitButton } from 'ui'
+
+// regex for password validation (at least 8 characters, 1 uppercase, 1 lowercase, 1 number)
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/
 
 export default function Register() {
   const router = useRouter()
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    passwordRepeat: ''
+  })
+  const [errors, setErrors] = useState<string>()
+
+  const updateFormData = (key: string, value: string) => {
+    setFormData({
+      ...formData,
+      [key]: value
+    })
+  }
+
+  useEffect(() => {
+    if (formData.password && !passwordRegex.test(formData.password)) {
+      setErrors('Parolei jāsatur vismaz 8 simboli, 1 lielais burts un 1 cipars')
+
+    } else if (formData.passwordRepeat && formData.passwordRepeat !== formData.password) {
+      setErrors('Paroles nesakrīt')
+    } else {
+      setErrors(undefined)
+    }
+
+  }, [formData, setErrors])
+
   const [registerResponse, register] = useRegister()
 
   useEffect(() => {
@@ -28,30 +56,80 @@ export default function Register() {
     router.push('/auth/login')
   }, [registerResponse, router])
 
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+  const onSubmit = useCallback(async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    register({ firstName, lastName, email, password })
-  }
+    if (errors) {
+      return
+    }
+
+    console.log(`calling register with ${formData}`)
+    register({ ...formData })
+  }, [errors, formData, register])
 
   return (
     <>
       <h5 className="text-center mb-4">Izveidot jaunu kontu</h5>
       <form onSubmit={onSubmit}>
-        <Input type="text" name="firstName" placeholder="Vārds" required value={firstName} onChange={setFirstName}>
-          Vārds
-        </Input>
+        <TextField
+          type="text"
+          name="firstName"
+          label="Vārds"
+          className="w-full mb-4"
+          placeholder="Vārds"
+          required
+          value={formData.firstName}
+          onChange={(e) => updateFormData('firstName', e.target.value)}
+        />
 
-        <Input type="text" name="lastName" placeholder="Uzvārds" required value={lastName} onChange={setLastName}>
-          Uzvārds
-        </Input>
+        <TextField
+          type="text"
+          name="lastName"
+          label="Uzvārds"
+          className="w-full mb-4"
+          placeholder="Uzvārds"
+          required
+          value={formData.lastName}
+          onChange={(e) => updateFormData('lastName', e.target.value)}
+        />
 
-        <Input type="email" name="email" placeholder="Epasts" required value={email} onChange={setEmail}>
-          Epasts
-        </Input>
+        <TextField
+          type="email"
+          name="email"
+          label="Epasts"
+          className="w-full mb-4"
+          placeholder="Epasts"
+          required
+          value={formData.email}
+          onChange={(e) => updateFormData('email', e.target.value)}
+        />
 
-        <Input type="password" name="password" placeholder="Parole" required value={password} onChange={setPassword}>
-          Parole
-        </Input>
+        <TextField
+          type="password"
+          name="password"
+          label="Parole"
+          className="w-full mb-4"
+          placeholder="Parole"
+          required
+          value={formData.password}
+          onChange={(e) => updateFormData('password', e.target.value)}
+        />
+
+        <TextField
+          type="password"
+          name="passwordRepeat"
+          label="Parole Atkārtoti"
+          className="w-full mb-4"
+          placeholder="Parole Atkārtoti"
+          required
+          value={formData.passwordRepeat}
+          onChange={(e) => updateFormData('passwordRepeat', e.target.value)}
+        />
+
+        {errors && (
+          <div className="mb-4 text-red-600 dark:text-red-500">
+            {errors}
+          </div>
+        )}
 
         <div className="mb-4 text-center">
           <SubmitButton>Reģistrēties</SubmitButton>
