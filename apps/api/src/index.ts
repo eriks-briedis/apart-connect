@@ -1,5 +1,4 @@
 import express from 'express'
-import { knexInstance } from './db/knexfile'
 import { authRouter, initiativesRouter, invitationsRouter, notificationsRouter, votesRouter } from './routes'
 import { propertiesRouter } from './routes/properties.routes'
 import { usersRouter } from './routes/users.routes'
@@ -13,7 +12,7 @@ app.use(cors({
 }))
 
 // if (process.env.NODE_ENV !== 'production') {
-  knexInstance.migrate.latest()
+  // knexInstance.migrate.latest()
 // }
 
 // Routes
