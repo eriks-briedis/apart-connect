@@ -1,6 +1,6 @@
 import { Router } from 'express'
-import { routeGuard } from '../utils'
-import { canUserVoteForInitiative, createInitiative, getInitiativeById, getVotesByInitiativeId, initiativeToJSON, updateInitiative } from '../models'
+import { canUserVoteForInitiative, createInitiative, doesUserBelongToProperty, getInitiativeById, getPropertyById, getVotesByInitiativeId, initiativeToJSON, updateInitiative } from '../models'
+import { routeGuard, sendNewInitiativeNotifications } from '../utils'
 
 export const initiativesRouter = Router()
 
@@ -9,6 +9,12 @@ export const initiativesRouter = Router()
  */
 initiativesRouter.use(routeGuard)
 
+/**
+ * POST /initiatives
+ * Create a new initiative
+ * Only users that are attached to the property can create initiatives
+ * If the initiative is open, notify all users in the property
+ */
 initiativesRouter.post('/', async (req, res) => {
   const {
     label,
@@ -21,6 +27,18 @@ initiativesRouter.post('/', async (req, res) => {
 
   if (!label || !description || !propertyId) {
     res.status(400).json({ error: 'Missing required fields' })
+    return
+  }
+
+  const property = await getPropertyById(propertyId)
+  if (!property) {
+    res.status(404).json({ error: 'Property not found' })
+    return
+  }
+
+  const canCreateInitiative = await doesUserBelongToProperty(property, req.user)
+  if (!canCreateInitiative) {
+    res.status(403).json({ error: 'You are not allowed to create initiatives for this property' })
     return
   }
 
@@ -37,6 +55,10 @@ initiativesRouter.post('/', async (req, res) => {
   if (!initiative) {
     res.status(500).json({ error: 'Failed to create initiative' })
     return
+  }
+
+  if (initiative.status === 'open') {
+    await sendNewInitiativeNotifications(property, initiative)
   }
 
   res.json({ success: true, data: initiativeToJSON(initiative) })
@@ -64,6 +86,13 @@ initiativesRouter.get('/:initiativeId', async (req, res) => {
   })
 })
 
+/**
+ * POST /initiatives/:initiativeId/publish
+ * Publish an initiative
+ * Only the creator of the initiative can publish it
+ * Only draft initiatives can be published
+ * Notify all users in the property
+ */
 initiativesRouter.post('/:initiativeId/publish', async (req, res) => {
   const initiativeId = parseInt(req.params.initiativeId, 10)
   const initiative = await getInitiativeById(initiativeId)
@@ -83,7 +112,14 @@ initiativesRouter.post('/:initiativeId/publish', async (req, res) => {
     return
   }
 
+  const property = await getPropertyById(initiative.property_id)
+  if (!property) {
+    res.status(404).json({ error: 'Property not found' })
+    return
+  }
+
   await updateInitiative(initiativeId, { status: 'open' })
+  await sendNewInitiativeNotifications(property, initiative)
 
   res.json({ success: true, message: 'ok' })
 })

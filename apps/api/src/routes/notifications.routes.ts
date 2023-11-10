@@ -9,7 +9,7 @@ export const notificationsRouter = Router()
  */
 notificationsRouter.use(routeGuard)
 
-notificationsRouter.post('/:id/reject', async (req, res) => {
+notificationsRouter.post('/:id/clear', async (req, res) => {
   const id = parseInt(req.params.id, 10)
   const notification = await getNotificationById(id)
 

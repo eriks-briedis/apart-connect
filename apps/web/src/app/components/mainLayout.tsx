@@ -22,6 +22,16 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserLoginModel | null>(null)
 
   useEffect(() => {
+    if (!user) {
+      return
+    }
+
+    setInterval(() => {
+      mutate('/auth/me')
+    }, 5000 * 60)
+  }, [user, mutate])
+
+  useEffect(() => {
     if (!data) {
       return
     }

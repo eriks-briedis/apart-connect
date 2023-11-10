@@ -1,5 +1,7 @@
 import { NotificationModel, NotificationType } from 'shared'
 import { knexInstance } from '../db/knexfile'
+import { getAllPropertyUsers } from './property-user.table'
+import { Property } from './property.table'
 
 export interface Notification {
   id: number
@@ -11,6 +13,14 @@ export interface Notification {
   read: boolean
   created_at: Date
   updated_at: Date
+}
+
+export interface NotifyAllUsersInput {
+  property: Property
+  type: NotificationType
+  title: string
+  message: string
+  url: string
 }
 
 export const Notifications = () => knexInstance<Notification>('notification')
@@ -37,6 +47,26 @@ export const getNotificationById = async (id: number) => {
 
 export const markNotificationAsRead = async (id: number) => {
   return await Notifications().where({ id }).update({ read: true })
+}
+
+export const notifyAllUsersInProperty = async ({
+  property,
+  type,
+  title,
+  message,
+  url,
+}: NotifyAllUsersInput) => {
+  const users = await getAllPropertyUsers(property.id, ['active'])
+
+  for (const user of users) {
+    await createNotification({
+      user_id: user.id,
+      title,
+      message,
+      url,
+      type,
+    })
+  }
 }
 
 export const notificationToJSON = (notification: Notification): NotificationModel => ({

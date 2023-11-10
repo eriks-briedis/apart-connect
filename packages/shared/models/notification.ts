@@ -1,4 +1,4 @@
-export type NotificationType = 'invitation' | 'resolution'
+export type NotificationType = 'invitation' | 'initiative'
 
 export interface NotificationModel {
   id: number

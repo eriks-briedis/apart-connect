@@ -1,13 +1,15 @@
 'use client'
 
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { NotificationModel } from 'shared';
 import { CheckIcon, XMarkIcon } from 'ui';
 import { InfoLinkButton, PageHeader, UserContext, WarningLinkButton } from '../components';
 import { POST } from '../utils';
 import moment from 'moment';
+import { useRouter } from 'next/navigation';
 
 export default function NotificationsPage() {
+  const router = useRouter()
   const context = useContext(UserContext);
   const [notifications, setNotifications] = useState<any[]>([])
 
@@ -25,8 +27,8 @@ export default function NotificationsPage() {
     setNotifications(user.notifications)
   }, [context])
 
-  const onReject = async (notification: NotificationModel) => {
-    const response = await POST(`/notifications/${notification.id}/reject`, { })
+  const clearNotification = useCallback(async (notification: NotificationModel, redirectUrl?: string) => {
+    const response = await POST(`/notifications/${notification.id}/clear`, { })
     if (!response.success) {
       alert('Neizdevās noraidīt paziņojumu')
       return
@@ -35,6 +37,18 @@ export default function NotificationsPage() {
     if (context?.refreshUser) {
       context.refreshUser()
     }
+
+    if (redirectUrl) {
+      router.push(redirectUrl)
+    }
+  }, [context, router])
+
+  const onAccept = useCallback((notification: NotificationModel) => {
+    clearNotification(notification, notification.url)
+  }, [clearNotification])
+
+  const onReject = (notification: NotificationModel) => {
+    clearNotification(notification)
   }
 
   return (
@@ -57,14 +71,15 @@ export default function NotificationsPage() {
 
             {!notification.read && (
               <div className="mb-2">
-                <InfoLinkButton href={notification.url}>
+                <InfoLinkButton href="#" onClick={() => onAccept(notification)}>
                   <CheckIcon className="w-6 h-6 stroke-white"></CheckIcon>
-                  Apstiprināt
+                  {notification.type === 'invitation' && 'Apstiprināt'}
+                  {notification.type === 'initiative' && 'Balsot'}
                 </InfoLinkButton>
 
                 <WarningLinkButton href="#" onClick={() => onReject(notification)}>
                   <XMarkIcon className="w-6 h-6 stroke-white"></XMarkIcon>
-                  Noraidīt
+                  Notīrīt
                 </WarningLinkButton>
               </div>
             )}

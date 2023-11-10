@@ -48,11 +48,22 @@ export const detachUserFromProperty = async (propertyId: number, userId: number)
 }
 
 export const getUserProperties = async (userId: number, statuses: string[] = []) => {
-  return await PropertyUsers().where({ user_id: userId }).whereIn('status', statuses)
+  return await PropertyUsers().where({ user_id: userId })
+    .modify((queryBuilder) => {
+      if (statuses.length) {
+        queryBuilder.whereIn('status', statuses)
+      }
+    })
 }
 
-export const getAllPropertyUsers = async (propertyId: number) => {
-  const propertyUsers = await PropertyUsers().where({ property_id: propertyId })
+export const getAllPropertyUsers = async (propertyId: number, statuses: PropertyUserStatus[] = []): Promise<User[]> => {
+  const propertyUsers = await PropertyUsers()
+    .where({ property_id: propertyId })
+    .modify((queryBuilder) => {
+      if (statuses.length) {
+        queryBuilder.whereIn('status', statuses)
+      }
+    })
   const users = await getUsersByIds(propertyUsers.map((pu) => pu.user_id))
 
   return users.filter((user, index, self) => {
