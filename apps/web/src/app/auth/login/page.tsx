@@ -74,6 +74,15 @@ export default function Login() {
             Reģistrēties
           </a>
         </p>
+
+        <p className="text-right">
+          <a
+            className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+            href="/auth/reset-password"
+          >
+            Aizmirsi paroli?
+          </a>
+        </p>
       </form>
     </>
   )

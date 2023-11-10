@@ -28,11 +28,15 @@ export const routeGuard = async (req, res, next) => {
 }
 
 export const getUserFromToken = async (token: string): Promise<User | null> => {
+  const jwtSecret = process.env.JWT_SECRET
+  if (!jwtSecret) {
+    throw new Error('No token provided')
+  }
   try {
-    const data = verify(token, process.env.JWT_SECRET)
+    const data = verify(token, jwtSecret)
     if (data instanceof Object) {
       const user = await getUserById(data._id)
-      return user
+      return user ?? null
     }
     return null
   } catch (e) {

@@ -3,6 +3,7 @@ import { authRouter, initiativesRouter, invitationsRouter, notificationsRouter, 
 import { propertiesRouter } from './routes/properties.routes'
 import { usersRouter } from './routes/users.routes'
 import cors = require('cors')
+import { knexInstance } from './db/knexfile'
 
 const app = express()
 const port = process.env.PORT || 5005
@@ -11,9 +12,9 @@ app.use(cors({
   origin: '*',
 }))
 
-// if (process.env.NODE_ENV !== 'production') {
-  // knexInstance.migrate.latest()
-// }
+if (process.env.ENV === 'development') {
+  knexInstance.migrate.latest()
+}
 
 // Routes
 app.use('/auth', authRouter)

@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { attachUserToProperty, createProperty, deleteProperty, detachUserFromProperty, doesUserBelongToProperty, getAllPropertyUsers, getAllUserProperties, getInitiativesByPropertyId, getPropertyById, initiativeToJSON, isUserAttachedToProperty, propertyToJSON, updateProperty, userToJSON } from '../models'
+import { attachUserToProperty, createProperty, deleteProperty, detachUserFromProperty, doesUserBelongToProperty, getAllPropertyUsers, getAllUserProperties, getInitiativesByPropertyId, getPropertyById, getUserById, initiativeToJSON, isUserPropertyAdmin, propertyToJSON, updateProperty, userToJSON } from '../models'
 import { routeGuard } from '../utils'
 
 export const propertiesRouter = Router()
@@ -20,6 +20,7 @@ propertiesRouter.post('/', async (req, res) => {
     city,
     zip,
     country,
+    numberOfUnits,
   } = req.body
 
   if (!name || !address || !city || !zip || !country) {
@@ -27,7 +28,26 @@ propertiesRouter.post('/', async (req, res) => {
     return
   }
 
-  await createProperty({ name, address, city, zip, country, admin_id: req.user.id })
+  const property = await createProperty({
+    name,
+    address,
+    city,
+    zip,
+    country,
+    number_of_units: numberOfUnits,
+  })
+
+  if (!property) {
+    res.status(500).json({ error: 'Failed to create property' })
+    return
+  }
+
+  await attachUserToProperty({
+    property_id: property.id,
+    user_id: req.user.id,
+    role: 'property_admin',
+    status: 'active',
+  })
 
   res.json({ success: true, message: 'ok' })
 })
@@ -144,37 +164,6 @@ propertiesRouter.delete('/:propertyId', async (req, res) => {
 })
 
 /**
- * POST /properties/:propertyId/attach-user
- * Attaches a user to a property
- * Only the property admin can attach users
- */
-propertiesRouter.post('/:propertyId/attach-user', async (req, res) => {
-  const propertyId = parseInt(req.params.propertyId, 10)
-  const userId = parseInt(req.body.userId, 10)
-
-  if (!propertyId || !userId) {
-    res.status(400).json({ error: 'Missing required fields' })
-    return
-  }
-
-  const property = await getPropertyById(propertyId)
-  if (!property || property.admin_id != req.user.id) {
-    res.status(400).json({ error: 'You cannot attach users to this property' })
-    return
-  }
-
-  const isAlreadyAttached = await isUserAttachedToProperty(userId, propertyId)
-  if (isAlreadyAttached) {
-    res.status(400).json({ error: 'User already attached to property' })
-    return
-  }
-
-  await attachUserToProperty(userId, propertyId)
-
-  res.json({ success: true, message: 'ok' })
-})
-
-/**
  * POST /properties/:propertyId/detach-user
  * Detaches a user from a property
  * Only the property admin can detach users
@@ -189,12 +178,24 @@ propertiesRouter.post('/:propertyId/detach-user', async (req, res) => {
   }
 
   const property = await getPropertyById(propertyId)
-  if (!property || property.admin_id !== req.user.id) {
+  if (!property) {
     res.status(400).json({ error: 'Invalid property' })
     return
   }
 
-  const isAlreadyAttached = await isUserAttachedToProperty(userId, propertyId)
+  const canDelete = await isUserPropertyAdmin(propertyId, req.user.id)
+  if (!canDelete) {
+    res.status(400).json({ error: 'Invalid property' })
+    return
+  }
+
+  const user = await getUserById(userId)
+  if (!user) {
+    res.status(400).json({ error: 'Invalid user' })
+    return
+  }
+
+  const isAlreadyAttached = await doesUserBelongToProperty(property, user)
   if (!isAlreadyAttached) {
     res.status(400).json({ error: 'User not attached to property' })
     return

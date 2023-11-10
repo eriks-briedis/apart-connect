@@ -1,16 +1,15 @@
+import { GET, passwordRegex } from '@/app/utils';
 import TextField from '@mui/material/TextField/TextField';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { SubmitButton } from 'ui';
 import { RegisterInput } from '../register/hooks';
 
 export interface RegisterFormProps {
+  email?: string
   onSubmit: (formData: RegisterInput) => void
 }
 
-// regex for password validation (at least 8 characters, 1 uppercase, 1 lowercase, 1 number)
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/
-
-export function RegisterForm({ onSubmit }: RegisterFormProps): JSX.Element {
+export function RegisterForm({ email, onSubmit }: RegisterFormProps): JSX.Element {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -20,12 +19,31 @@ export function RegisterForm({ onSubmit }: RegisterFormProps): JSX.Element {
   })
   const [errors, setErrors] = useState<string>()
 
-  const updateFormData = (key: string, value: string) => {
+  const verifyEmail = async (email: string) => {
+    const response = await GET('/auth/availability', { email })
+
+    if (!response.success) {
+      setErrors('Nevarēja pārbaudīt epasta adresi')
+      return
+    }
+
+    if (!response.data) {
+      setErrors('Šāds epasts jau ir reģistrēts')
+    }
+  }
+
+  const updateFormData = useCallback((key: string, value: string) => {
     setFormData({
       ...formData,
       [key]: value
     })
-  }
+  }, [formData])
+
+  useEffect(() => {
+    if (email) {
+      updateFormData('email', email)
+    }
+  }, [email, updateFormData])
 
   useEffect(() => {
     if (formData.password && !passwordRegex.test(formData.password)) {
@@ -83,9 +101,11 @@ export function RegisterForm({ onSubmit }: RegisterFormProps): JSX.Element {
           label="Epasts"
           className="w-full"
           placeholder="Epasts"
+          disabled={!!email}
           required
           value={formData.email}
           onChange={(e) => updateFormData('email', e.target.value)}
+          onBlur={(e) => verifyEmail(e.target.value)}
         />
       </div>
 

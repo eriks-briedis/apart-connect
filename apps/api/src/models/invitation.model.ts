@@ -4,6 +4,7 @@ import { randomBytes } from 'crypto'
 import { createNotification } from './notification.model'
 import { getPropertyById } from './property.table'
 import { InvitationModel, InvitationStatus } from 'shared'
+import { User, getUserByEmail, getUserById } from './user.table'
 
 export interface Invitation {
   id: number
@@ -62,6 +63,31 @@ export const createInvitation = async (input: Partial<Invitation>) => {
   }
 
   return invitation
+}
+
+export const setInvitationStatus = async (id: number, status: InvitationStatus) => {
+  return await Invitations().where({ id }).update({
+    status,
+    updated_at: new Date(),
+  })
+}
+
+export const getUserByInvitationToken = async (token: string) => {
+  const invitation = await getInvitationByToken(token)
+  let user: User | undefined = undefined
+
+  if (!!invitation?.user_id) {
+    user = await getUserById(invitation.user_id)
+  }
+
+  if (!!invitation?.email) {
+    user = await getUserByEmail(invitation.email)
+  }
+
+  return {
+    user,
+    invitation,
+  }
 }
 
 export const createInvitationUrl = (invitation: Invitation, newUser = false) => {

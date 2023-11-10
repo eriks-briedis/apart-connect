@@ -9,6 +9,7 @@ export interface Property {
   zip: string
   country: string
   number_of_units: number
+  /** @deprecated use PropertyUser.role */
   admin_id: number
   created_at: Date
   updated_at: Date
@@ -17,11 +18,13 @@ export interface Property {
 export const Properties = () => knexInstance<Property>('property')
 
 export const createProperty = async (property: Partial<Property>) => {
-  return await Properties().insert({
+  const result = await Properties().insert({
     ...property,
     created_at: new Date(),
     updated_at: new Date(),
-  })
+  }).returning('*')
+
+  return result[0]
 }
 
 export const updateProperty = async (id: number, property: Partial<Property>) => {
@@ -46,12 +49,12 @@ export const getPropertyByIds = async (ids: number[]) => {
 }
 
 export const getAllUserProperties = async (userId: number) => {
-  const adminProperties = await Properties().where({ admin_id: userId })
-  const userProperties = await getUserProperties(userId)
+  const userProperties = await getUserProperties(userId, ['active'])
   const properties = await getPropertyByIds(userProperties.map((p) => p.property_id))
 
-  return [...adminProperties, ...properties]
-    .filter((property, index, self) => self.findIndex((p) => p.id === property.id) === index)
+  return properties.filter((property, index, self) => {
+    return self.findIndex((p) => p.id === property.id) === index
+  })
 }
 
 export const propertyToJSON = (property: Property): PropertyModel => ({

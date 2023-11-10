@@ -12,6 +12,7 @@ export interface UserModel {
   email: string
   dateOfBirth: string
   phone: string
+  isVerified: boolean
   createdAt: Date
   updatedAt: Date
 }
