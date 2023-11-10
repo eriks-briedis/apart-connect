@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { attachUserToProperty, doesUserBelongToProperty, getPropertyById, getUserByEmail, getUserById } from '../models'
+import { attachUserToProperty, doesUserBelongToProperty, getPropertyById, getUserByEmail } from '../models'
 import { createInvitation, createInvitationUrl, getInvitationByToken, invitationToJSON } from '../models/invitation.model'
 import { markNotificationAsRead } from '../models/notification.model'
 import { routeGuard } from '../utils'
