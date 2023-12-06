@@ -64,6 +64,11 @@ initiativesRouter.post('/', async (req, res) => {
   res.json({ success: true, data: initiativeToJSON(initiative) })
 })
 
+/**
+ * GET /initiatives/:initiativeId
+ * Get an initiative by id
+ * Only users that are attached to the property can view initiatives
+ */
 initiativesRouter.get('/:initiativeId', async (req, res) => {
   const initiativeId = parseInt(req.params.initiativeId, 10)
   const initiative = await getInitiativeById(initiativeId)

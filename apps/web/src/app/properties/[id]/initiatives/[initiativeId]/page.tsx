@@ -7,6 +7,7 @@ import { HTTPResponse, InitiativeModel, PropertyModel } from 'shared'
 import useSWR, { useSWRConfig } from 'swr'
 import { Button } from 'ui'
 import { Vote } from './vote'
+import Link from 'next/link'
 
 export default function Initiative({ params }: any) {
   const { id, initiativeId } = params
@@ -56,7 +57,19 @@ export default function Initiative({ params }: any) {
               <Button onClick={publish}>Publicēt</Button>
             </div>
           )}
+
           <Vote initiative={initiative} />
+
+          {initiative.createdBy === context?.user?.id && (
+            <div className="px-4 py-4 text-center">
+              <Link
+                href={`/properties/${id}/initiatives/${initiative.id}/edit`}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                Labot aptauju
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </>

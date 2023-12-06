@@ -31,7 +31,7 @@ export default function PropertyPage({ params }: any) {
 
       <div className="px-4 py-4 text-center">
         <Link href={`/properties/${id}/edit`} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-          Edit property
+          Labot īpašumu
         </Link>
       </div>
     </>

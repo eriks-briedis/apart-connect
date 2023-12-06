@@ -4,7 +4,7 @@ import { randomBytes } from 'crypto'
 import { createNotification } from './notification.model'
 import { getPropertyById } from './property.table'
 import { InvitationModel, InvitationStatus } from 'shared'
-import { User, getUserByEmail, getUserById } from './user.table'
+import { User, getUserByEmail, getUserById, getUserByToken } from './user.table'
 
 export interface Invitation {
   id: number
@@ -82,6 +82,10 @@ export const getUserByInvitationToken = async (token: string) => {
 
   if (!!invitation?.email) {
     user = await getUserByEmail(invitation.email)
+  }
+
+  if (!user) {
+    user = await getUserByToken(token)
   }
 
   return {

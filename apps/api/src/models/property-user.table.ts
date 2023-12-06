@@ -28,6 +28,22 @@ export const doesUserBelongToProperty = async (property: Property, user: User) =
 }
 
 export const attachUserToProperty = async (propertyUser: Partial<PropertyUser>) => {
+  // @TODO: refactor
+  const existingPropertyUser = await PropertyUsers().where({
+    property_id: propertyUser.property_id,
+    user_id: propertyUser.user_id,
+  }).first()
+
+  if (existingPropertyUser) {
+    return await PropertyUsers().where({
+      property_id: propertyUser.property_id,
+      user_id: propertyUser.user_id,
+    }).update({
+      ...propertyUser,
+      updated_at: new Date(),
+    })
+  }
+
   return await PropertyUsers().insert({
     ...propertyUser,
     attached_at: new Date(),

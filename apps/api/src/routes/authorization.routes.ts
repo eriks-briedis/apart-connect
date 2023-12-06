@@ -155,11 +155,6 @@ authRouter.post('/verify', async (req, res) => {
       return
     }
 
-    if (!invitation) {
-      res.status(404).json({ error: 'Invitation not found' })
-      return
-    }
-
     await updateUser(
       user.id,
       {
@@ -167,8 +162,11 @@ authRouter.post('/verify', async (req, res) => {
         token: null,
       },
     )
-    await approveUserForProperty(invitation.property_id, user.id)
-    await setInvitationStatus(invitation.id, 'accepted')
+
+    if (invitation) {
+      await approveUserForProperty(invitation.property_id, user.id)
+      await setInvitationStatus(invitation.id, 'accepted')
+    }
   } else if (type === 'reset-password') {
     user = await getUserByToken(token)
 

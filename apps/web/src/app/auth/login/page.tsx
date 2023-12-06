@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { FormEvent, useEffect, useState } from "react"
 import { SubmitButton } from "ui"
 import { useLogin } from "./hooks"
+import Link from "next/link"
 
 export default function Login() {
   const router = useRouter()
@@ -76,12 +77,12 @@ export default function Login() {
         </p>
 
         <p className="text-right">
-          <a
+          <Link
             className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
             href="/auth/reset-password"
           >
             Aizmirsi paroli?
-          </a>
+          </Link>
         </p>
       </form>
     </>

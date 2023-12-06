@@ -21,7 +21,7 @@ votesRouter.post('/', async (req, res) => {
     vote,
   } = req.body
 
-  if (!initiativeId || !vote) {
+  if (!initiativeId || vote === undefined || vote === null) {
     res.status(400).json({ error: 'Missing required fields' })
     return
   }

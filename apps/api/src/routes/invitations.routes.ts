@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { attachUserToProperty, doesUserBelongToProperty, getPropertyById, getUserByEmail } from '../models'
-import { createInvitation, createInvitationUrl, getInvitationByToken, invitationToJSON } from '../models/invitation.model'
+import { createInvitation, createInvitationUrl, getInvitationByToken, invitationToJSON, setInvitationStatus } from '../models/invitation.model'
 import { markNotificationAsRead } from '../models/notification.model'
 import { routeGuard } from '../utils'
 import { sendEmail } from '../utils/send-email'
@@ -107,8 +107,13 @@ invitationsRouter.post('/accept', async (req, res) => {
     return
   }
 
-  await attachUserToProperty(property.id, req.user.id)
-  await markNotificationAsRead(invitation.id)
+  await attachUserToProperty({
+    property_id: property.id,
+    user_id: req.user.id,
+    role: 'user',
+    status: 'active',
+  })
+  await setInvitationStatus(invitation.id, 'accepted')
 
   res.json({ success: true, message: 'ok' })
 })
