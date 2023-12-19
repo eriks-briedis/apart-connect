@@ -11,8 +11,12 @@ export interface InitiativeModel {
   createdBy: number
   propertyId?: number
   canVote?: boolean
+  canPublish?: boolean
+  canDelete?: boolean
+  canEdit?: boolean
   totalVotes?: number
   expiresAt: Date
   createdAt: Date
   updatedAt: Date
+  deletedAt?: Date
 }

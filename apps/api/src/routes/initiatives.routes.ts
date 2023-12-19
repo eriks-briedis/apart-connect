@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { canUserVoteForInitiative, createInitiative, doesUserBelongToProperty, getInitiativeById, getPropertyById, getVotesByInitiativeId, initiativeToJSON, updateInitiative } from '../models'
+import { canUserVoteForInitiative, createInitiative, deleteInitiativeById, doesUserBelongToProperty, getInitiativeById, getPropertyById, getVotesByInitiativeId, initiativeToJSON, isUserPropertyAdmin, updateInitiative } from '../models'
 import { routeGuard, sendNewInitiativeNotifications } from '../utils'
 
 export const initiativesRouter = Router()
@@ -82,12 +82,17 @@ initiativesRouter.get('/:initiativeId', async (req, res) => {
 
   const votes = await getVotesByInitiativeId(initiative.id)
   const canVote = await canUserVoteForInitiative(initiative, req.user)
+  const isPropertyAdmin = await isUserPropertyAdmin(initiative.property_id, req.user.id)
+  const isInitiativeCreator = initiative.created_by === req.user.id
 
   res.json({
     success: true,
     data: {
       ...initiativeToJSON(initiative),
       canVote,
+      canPublish: isPropertyAdmin && initiative.status === 'draft',
+      canDelete: (isPropertyAdmin || isInitiativeCreator) && initiative.status === 'draft',
+      canEdit: (isPropertyAdmin || isInitiativeCreator) && initiative.status === 'draft',
       totalVotes: votes.length,
     },
   })
@@ -163,4 +168,24 @@ initiativesRouter.post('/:initiativeId/publish', async (req, res) => {
   await sendNewInitiativeNotifications(property, initiative)
 
   res.json({ success: true, message: 'ok' })
+})
+
+initiativesRouter.delete('/:initiativeId', async (req, res) => {
+  const initiativeId = parseInt(req.params.initiativeId, 10)
+  const initiative = await getInitiativeById(initiativeId)
+
+  if (!initiative) {
+    res.status(404).json({ error: 'Initiative not found' })
+    return
+  }
+
+  const isUserAdmin = await isUserPropertyAdmin(initiative.property_id, req.user.id)
+  if (!isUserAdmin) {
+    res.status(403).json({ error: 'You are not allowed to delete initiatives for this property' })
+    return
+  }
+
+  const deletedInitiative = await deleteInitiativeById(initiativeId)
+
+  res.json({ success: true, data: deletedInitiative })
 })

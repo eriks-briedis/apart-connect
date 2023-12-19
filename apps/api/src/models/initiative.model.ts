@@ -17,6 +17,7 @@ export interface Initative {
   expires_at: Date
   created_at: Date
   updated_at: Date
+  deleted_at: Date | null
 }
 
 export const Initiatives = () => knexInstance<Initative>('initiative')
@@ -57,11 +58,22 @@ export const canUserVoteForInitiative = async (initiative: Initative, user: User
 }
 
 export const getInitiativeById = async (id: number) => {
-  return await Initiatives().where({ id }).first()
+  // where id and deleted_at is null
+  return await Initiatives().where({ id }).and.where({ deleted_at: null }).first()
 }
 
 export const getInitiativesByPropertyId = async (propertyId: number) => {
-  return await Initiatives().where({ property_id: propertyId })
+  return await Initiatives()
+    .where({ property_id: propertyId })
+    .and.where({ deleted_at: null })
+}
+
+export const deleteInitiativeById = async (id: number) => {
+  const result = await Initiatives().where({ id }).update({
+    deleted_at: new Date(),
+  }).returning('*')
+
+  return result[0]
 }
 
 export const initiativeToJSON = (initiative: Initative): InitiativeModel => ({
