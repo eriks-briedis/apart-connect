@@ -1,20 +1,19 @@
 'use client'
 
-import { PageHeader, UserContext } from '@/app/components'
+import { PageHeader } from '@/app/components'
 import { DELETE, GET, POST } from '@/app/utils'
-import { useCallback, useContext, useEffect, useState } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useCallback } from 'react'
 import { HTTPResponse, InitiativeModel, PropertyModel } from 'shared'
 import useSWR, { useSWRConfig } from 'swr'
 import { Button } from 'ui'
 import { Vote } from './vote'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 
 export default function Initiative({ params }: any) {
   const { id, initiativeId } = params
   const router = useRouter()
   const { mutate } = useSWRConfig()
-  const context = useContext(UserContext)
   const { data } = useSWR<HTTPResponse<InitiativeModel>>(`/initiatives/${initiativeId}`, GET)
   const propertyResponse = useSWR<HTTPResponse<PropertyModel>>(`/properties/${id}`, GET)
   const initiative = data?.data
@@ -46,9 +45,11 @@ export default function Initiative({ params }: any) {
       <PageHeader header={`Aptauja: ${initiative?.label ?? ''}`} backLink={`/properties/${id}`}></PageHeader>
       {initiative && (
         <div className="py-2 px-4">
-          <div>Jau nobalsojuši {initiative.totalVotes || 0} no {property?.numberOfUnits || 0}</div>
-          <h5>{initiative.label}</h5>
-          <p className="mb-4">{initiative.description}</p>
+          {initiative.status === 'open' && (
+            <div>Jau nobalsojuši {initiative.totalVotes || 0} no {property?.numberOfUnits || 0}</div>
+          )}
+          <p className="mb-4" dangerouslySetInnerHTML={{__html: initiative.description}}></p>
+          <hr className="mb-4" />
             <div>
               {initiative.canPublish && (
                 <>

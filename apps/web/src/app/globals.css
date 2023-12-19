@@ -13,27 +13,27 @@
   }
 
   h1{
-    font-size: 64px;
+    font-size: 48px;
     font-weight:700;
   }
   h2{
-    font-size: 48px;
-    font-weight:700
-  }
- h3{
     font-size: 32px;
     font-weight:700
   }
- h4{
+ h3{
     font-size: 28px;
     font-weight:700
   }
- h5{
+ h4{
     font-size: 24px;
     font-weight:700
   }
- h6{
+ h5{
     font-size: 20px;
+    font-weight:700
+  }
+ h6{
+    font-size: 16px;
     font-weight:700
   }
 }
@@ -60,4 +60,8 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb)); */
+}
+
+.ql-editor {
+  min-height: 300px;
 }

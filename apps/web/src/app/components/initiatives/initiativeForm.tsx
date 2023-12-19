@@ -15,6 +15,7 @@ import moment from 'moment'
 import { FormEvent, forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react'
 import { InitiativeModel } from 'shared'
 import { SubmitButton } from 'ui'
+import { TextEditor } from '../TextEditor'
 
 export const defaultInitiative: UpsertInitiativeInput = {
   label: '',
@@ -94,14 +95,9 @@ export const InitiativeForm = forwardRef(({ buttons, initiative, onSubmit }: Ini
       </div>
 
       <div className="mb-4">
-        <TextField
-          label="Apraksts par aptauju"
-          className="w-full"
-          multiline
-          required
-          rows={4}
+        <TextEditor
           value={formValue.description}
-          onChange={(e) => updateFormValue('description', e.target.value)}
+          onChange={(value) => updateFormValue('description', value)}
         />
       </div>
 
