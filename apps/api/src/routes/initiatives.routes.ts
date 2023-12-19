@@ -23,9 +23,10 @@ initiativesRouter.post('/', async (req, res) => {
     status = 'draft',
     requiresSignature = false,
     propertyId,
+    expiresAt,
   } = req.body
 
-  if (!label || !description || !propertyId) {
+  if (!label || !description || !propertyId || !expiresAt) {
     res.status(400).json({ error: 'Missing required fields' })
     return
   }
@@ -48,6 +49,7 @@ initiativesRouter.post('/', async (req, res) => {
     type,
     status,
     requires_signature: requiresSignature,
+    expires_at: expiresAt,
     property_id: propertyId,
     created_by: req.user.id,
   })
@@ -89,6 +91,40 @@ initiativesRouter.get('/:initiativeId', async (req, res) => {
       totalVotes: votes.length,
     },
   })
+})
+
+/**
+ * PATCH /initiatives/:initiativeId
+ * Update an initiative
+ * Only draft initiatives can be updated
+ */
+initiativesRouter.patch('/:initiativeId', async (req, res) => {
+  const initiativeId = parseInt(req.params.initiativeId, 10)
+  const initiative = await getInitiativeById(initiativeId)
+
+  if (!initiative) {
+    res.status(404).json({ error: 'Initiative not found' })
+    return
+  }
+
+  if (initiative.status !== 'draft') {
+    res.status(400).json({ error: 'Initiative is not draft' })
+    return
+  }
+
+  const updatedInitiative = await updateInitiative(
+    initiativeId,
+    {
+      label: req.body.label,
+      description: req.body.description,
+      type: req.body.type,
+      status: req.body.status,
+      requires_signature: req.body.requiresSignature,
+      expires_at: req.body.expiresAt,
+    },
+  )
+
+  res.json({ success: true, data: updatedInitiative })
 })
 
 /**

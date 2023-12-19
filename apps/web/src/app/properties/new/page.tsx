@@ -2,10 +2,9 @@
 
 import { PageHeader } from '@/app/components'
 import { useRouter } from 'next/navigation'
-import { FormEvent, useCallback, useEffect, useState } from 'react'
-import { Input, SubmitButton } from 'ui'
-import { useCreateProperty } from '../hooks'
+import { useEffect } from 'react'
 import { PropertyForm } from '../components'
+import { useCreateProperty } from '../hooks'
 
 export default function NewProperty() {
   const router = useRouter()

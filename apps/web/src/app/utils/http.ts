@@ -56,7 +56,7 @@ export async function POST(endpoint: string, body: Record<string, string | numbe
   return await makeRequest(endpoint, 'POST', body)
 }
 
-export async function PATCH(endpoint: string, body: Record<string, string | number>) {
+export async function PATCH(endpoint: string, body: Record<string, string | number | boolean>) {
   return await makeRequest(endpoint, 'PATCH', body)
 }
 

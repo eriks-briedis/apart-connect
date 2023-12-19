@@ -1,9 +1,12 @@
+export type InitiativeType = 'poll' | 'majority' | 'unanimous'
+export type InitiativeStatus = 'draft' | 'open' | 'closed'
+
 export interface InitiativeModel {
   id: number
   label: string
   description: string
-  status: 'draft' | 'open' | 'closed'
-  type: 'poll' | 'majority' | 'unanimous'
+  status: InitiativeStatus
+  type: InitiativeType
   requiresSignature: boolean
   createdBy: number
   propertyId?: number

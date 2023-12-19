@@ -32,10 +32,12 @@ export const createInitiative = async (initiative: Partial<Initative>) => {
 }
 
 export const updateInitiative = async (id: number, initiative: Partial<Initative>) => {
-  return await Initiatives().where({ id }).update({
+  const result = await Initiatives().where({ id }).update({
     ...initiative,
     updated_at: new Date(),
-  })
+  }).returning('*')
+
+  return result[0]
 }
 
 export const canUserVoteForInitiative = async (initiative: Initative, user: User) => {
